@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "29893242ce6714a8562e8a6cdc1a93c2",
+    "hash": "3fc2f38fa379a95f12ff32c2feaae500",
     "packages": [
         {
             "name": "fabpot/sfyaml",
@@ -16,7 +16,9 @@
             },
             "type": "library",
             "time": "2011-06-11 13:15:04"
-        },
+        }
+    ],
+    "packages-dev": [
         {
             "name": "phpunit/php-code-coverage",
             "version": "1.2.17",
@@ -433,7 +435,6 @@
             "time": "2014-07-09 09:05:48"
         }
     ],
-    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
