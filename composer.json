@@ -1,0 +1,35 @@
+{
+    "name": "lazyguru/toggljira",
+    "description": "Toggl to Jira integration",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joe Constant",
+            "email": "joe@joeconstant.com"
+        }
+    ],
+    "repositories": {
+        "github": { 
+            "type": "package",
+            "package": {
+                "name": "fabpot/sfyaml",
+                "version": "dev-master",
+                "source": {
+                    "url": "git://github.com/fabpot/yaml.git",
+                    "type": "git",
+                    "reference": "origin/master"
+                }
+            }
+        }
+    },
+
+    "require": {
+        "fabpot/sfyaml": "dev-master",
+        "phpunit/phpunit": "3.7.*"
+    },
+
+    "autoload": {
+        "psr-0": {"sfYaml": "vendor/fabpot/sfyaml/lib/"},
+        "classmap": ["src/"]
+    }
+}
