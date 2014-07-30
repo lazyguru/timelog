@@ -2,8 +2,8 @@ TogglToJira
 ===========
 
 ## Description ##
-TogglToJira provides integration between Toggl[http://toggl.com] time tracking software and
-Jira[https://www.atlassian.com/software/jira] project management software
+TogglToJira provides integration between [Toggl](http://toggl.com) time tracking software and
+[Jira](https://www.atlassian.com/software/jira) project management software
 
 ## Pre-Requisites ##
 * Composer
@@ -19,8 +19,11 @@ Jira[https://www.atlassian.com/software/jira] project management software
       know if you are doing anything really bad
 
 ## Usage ##
-To run TogglToJira, execute `php bootstrap.php 2014-07-29` from the command line in the root directory of your
-TogglToJira project
+To run TogglToJira, from the command line in the root directory of your TogglToJira project execute 
+```
+php bootstrap.php 2014-07-29
+```
+
 
 ## License ##
-TogglToJira by Joe Constant is licensed under the MIT[http://opensource.org/licenses/MIT] license
+TogglToJira by Joe Constant is licensed under the [MIT license](http://opensource.org/licenses/MIT)
