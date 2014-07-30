@@ -1,0 +1,15 @@
+---
+Sites:
+    Jira1:
+        url:
+        user:
+        pass:
+    Jira2:
+        url:
+        user:
+        pass:
+Clients:
+    Client Name From Toggl1:
+        site: Jira1
+    Client Name From Toggl2:
+        site: Jira2
