@@ -21,9 +21,9 @@ TogglToJira provides integration between [Toggl](http://toggl.com) time tracking
 ## Usage ##
 To run TogglToJira, from the command line in the root directory of your TogglToJira project execute 
 ```
-php bootstrap.php 2014-07-29
+php bootstrap.php 2014-07-29 2014-07-30
 ```
-
+Start and end date are optional.  If you leave off end date, it will run for only start date.  If you leave off both dates, it will run for yesterday.
 
 ## License ##
 TogglToJira by Joe Constant is licensed under the [MIT license](http://opensource.org/licenses/MIT)
