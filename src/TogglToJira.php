@@ -80,12 +80,15 @@ class TogglToJira
      * @param string $rundate
      * @return array
      */
-    protected function getTimeEntries($rundate = null)
+    protected function getTimeEntries($rundate = null, $enddate = null)
     {
         if (empty($rundate)) {
             $rundate = date('Y-m-d', time() - 86400);
         }
-        $report_url = 'https://toggl.com/reports/api/v2/details?user_agent='.$this->user_agent.'&since=' . $rundate . '&until=' . $rundate;
+        if (empty($enddate)) {
+            $enddate = $rundate;
+        }
+        $report_url = 'https://toggl.com/reports/api/v2/details?user_agent='.$this->user_agent.'&since=' . $rundate . '&until=' . $enddate;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
@@ -101,9 +104,9 @@ class TogglToJira
      *
      * @param string $rundate
      */
-    public function run($rundate = null)
+    public function run($rundate = null, $enddate = null)
     {
-        $entries = $this->getTimeEntries($rundate);
+        $entries = $this->getTimeEntries($rundate, $enddate);
         $clients = $this->getClients();
         $sites = $this->getSites();
         foreach ($entries as $entry) {
@@ -129,6 +132,8 @@ class TogglToJira
      */
     function displayReport()
     {
+        asort($this->loggedTimes);
+        asort($this->notLoggedTimes);
         echo "******** Created Jira Worklogs **********\n";
         print_r($this->loggedTimes);
         echo "******* No Jira Worklogs Created ********\n";
@@ -150,7 +155,7 @@ class TogglToJira
     {
         $auth = base64_encode("{$site['user']}:{$site['pass']}");
 
-        if (is_int($timeSpent)) {
+        if (is_numeric($timeSpent)) {
             $timeSpent .= 'h';
         }
 

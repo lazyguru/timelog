@@ -10,7 +10,12 @@ require_once 'vendor/autoload.php';
 
 $ttj = new TogglToJira();
 $rundate = null;
+$enddate = null;
 if ($argc > 1) {
     $rundate = $argv[1];
+    $enddate = $rundate;
 }
-$ttj->run($rundate);
+if ($argc > 2) {
+    $enddate = $argv[2];
+}
+$ttj->run($rundate, $enddate);
