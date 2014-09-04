@@ -1,10 +1,15 @@
 <?php
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Subscriber\Log\LogSubscriber;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 /**
  * Class TogglToJira
  *
- * @author Joe Constant <joe@joeconstant.com>
- * @link http://joeconstant.com/
+ * @author  Joe Constant <joe@joeconstant.com>
+ * @link    http://joeconstant.com/
  * @license MIT
  */
 class TogglToJira
@@ -88,15 +93,20 @@ class TogglToJira
         if (empty($enddate)) {
             $enddate = $rundate;
         }
-        $report_url = 'https://toggl.com/reports/api/v2/details?user_agent='.$this->user_agent.'&since=' . $rundate . '&until=' . $enddate;
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-        curl_setopt($ch, CURLOPT_USERPWD, $this->api_token . ':api_token');
-        curl_setopt($ch, CURLOPT_URL, $report_url . '&workspace_id=' . $this->workspace_id);
-        $result = curl_exec($ch);
-        $result = json_decode($result);
-        return $result->data;
+        $report_url = 'https://toggl.com/reports/api/v2/details?user_agent=' . $this->user_agent . '&since=' . $rundate . '&until=' . $enddate . '&workspace_id=' . $this->workspace_id;
+
+        try {
+            $client = new GuzzleHttp\Client();
+            $request = $client->createRequest('GET', $report_url, [
+                'auth' => [$this->api_token, 'api_token']
+            ]);
+            $request->setHeader('Content-Type', 'application/json');
+            $response = $client->send($request);
+            return json_decode($response->getBody())->data;
+        } catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            $raw_response = explode("\n", $e->getResponse());
+            throw new Exception(end($raw_response));
+        }
     }
 
     /**
@@ -144,43 +154,52 @@ class TogglToJira
     /**
      * Create worklog entry in Jira
      *
-     * @param array $site
+     * @param array  $site
      * @param string $date
      * @param string $ticket
-     * @param mixed $timeSpent
+     * @param mixed  $timeSpent
      * @param string $comment
+     * @throws Exception
      * @return mixed
      */
     protected function setWorklog($site, $date, $ticket, $timeSpent, $comment = '')
     {
-        $auth = base64_encode("{$site['user']}:{$site['pass']}");
+        $url = "{$site['url']}/rest/api/2/issue/{$ticket}/worklog";
 
         if (is_numeric($timeSpent)) {
             $timeSpent .= 'h';
         }
 
-        $json = json_encode(array(
-            'timeSpent' => $timeSpent,
-            'started'   => "{$date}T00:00:00.000-0600",
-            'comment'   => $comment
-        ));
+        try {
+            $client = new GuzzleHttp\Client();
 
-        $url = "{$site['url']}/rest/api/2/issue/{$ticket}/worklog";
+            // create a log channel
+            $log = new Logger('TogglToJira');
+            $log->pushHandler(new StreamHandler('guzzle.log', Logger::DEBUG));
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HEADER, 1);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-            'Content-Type: application/json',
-            "Authorization: Basic $auth"
-        ));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
-        curl_setopt($ch, CURLOPT_POST, true);
-        $result=curl_exec ($ch);
+            $subscriber = new LogSubscriber($log);
+            $client->getEmitter()->attach($subscriber);
 
-        curl_close($ch);
+            $request = $client->createRequest('POST', $url, [
+                'auth' => [$site['user'], $site['pass']]
+            ]);
+            $request->setHeader('Content-Type', 'application/json');
+            $postBody = $request->getBody();
 
-        return $result;
+            // $postBody is an instance of GuzzleHttp\Post\PostBodyInterface
+            $postBody->setField('timeSpent', $timeSpent);
+            $postBody->setField('started', "{$date}T00:00:00.000-0600");
+            $postBody->setField('comment', $comment);
+
+            print_r($postBody);
+            //$request->setBody($postBody);
+            $response = $client->send($request);
+
+            return json_decode($response->getBody());
+        } catch (\GuzzleHttp\Exception\BadResponseException $e) {
+            $raw_response = explode("\n", $e->getResponse());
+            throw new Exception(end($raw_response));
+        }
     }
 
 }

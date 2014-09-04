@@ -24,7 +24,10 @@
     },
 
     "require": {
-        "fabpot/sfyaml": "dev-master"
+        "fabpot/sfyaml": "dev-master",
+        "guzzlehttp/guzzle-services": "~0.2",
+        "monolog/monolog": "1.6.0",
+        "guzzlehttp/log-subscriber": "~1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"
