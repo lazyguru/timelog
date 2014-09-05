@@ -180,25 +180,21 @@ class TogglToJira
             $subscriber = new LogSubscriber($log);
             $client->getEmitter()->attach($subscriber);
 
-            $request = $client->createRequest('POST', $url, [
-                'auth' => [$site['user'], $site['pass']]
+            $response = $client->post($url, [
+                'auth' => [$site['user'], $site['pass']],
+                'json' => [
+                    'timeSpent' => $timeSpent,
+                    'started' => "{$date}T00:00:00.000-0600",
+                    'comment' => $comment
+                ]
             ]);
-            $request->setHeader('Content-Type', 'application/json');
-            $postBody = $request->getBody();
-
-            // $postBody is an instance of GuzzleHttp\Post\PostBodyInterface
-            $postBody->setField('timeSpent', $timeSpent);
-            $postBody->setField('started', "{$date}T00:00:00.000-0600");
-            $postBody->setField('comment', $comment);
-
-            print_r($postBody);
-            //$request->setBody($postBody);
-            $response = $client->send($request);
 
             return json_decode($response->getBody());
         } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-            $raw_response = explode("\n", $e->getResponse());
-            throw new Exception(end($raw_response));
+            echo $e->getRequest();
+            if ($e->hasResponse()) {
+                echo $e->getResponse();
+            }
         }
     }
 
