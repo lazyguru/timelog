@@ -11,7 +11,7 @@ class Replicon
     private $uri        = '';
     private $username   = '';
     private $password   = '';
-    public $_debug = false;
+    public  $_debug     = false;
 
     protected $_errorno;
 
@@ -60,23 +60,26 @@ class Replicon
 
     public function getTimesheetByUseridDate($userid, $date)
     {
+        if (empty($date)) {
+            $date = date('Y-m-d', time() - 86400);
+        }
         $date = explode('-', $date);
         $data = [
             'Action'     => 'Query',
             'QueryType'  => 'EntryTimesheetByUserDate',
             'DomainType' => 'Replicon.Suite.Domain.EntryTimesheet',
             'Args'       => [
-                                [
-                                      '__type'   => 'Replicon.Domain.User',
-                                      'Identity' => (string)$userid
-                                ],
-                                [
-                                    "__type" => "Date",
-                                    "Year"   => $date[0],
-                                    "Month"  => $date[1],
-                                    "Day"    => $date[2]
-                                ]
-                            ]
+                [
+                    '__type'   => 'Replicon.Domain.User',
+                    'Identity' => (string)$userid
+                ],
+                [
+                    "__type" => "Date",
+                    "Year"   => $date[0],
+                    "Month"  => $date[1],
+                    "Day"    => $date[2]
+                ]
+            ]
         ];
         $data = json_encode($data);
 
@@ -118,36 +121,40 @@ class Replicon
         $this->_handleError($data, $response);
         return $response->Value[0]->Properties;
     }
+
     public function addTimeEntry($timesheet, $date, $code, $duration, $comment)
     {
         $date = explode('-', $date);
         $data = [
-            "Action" => "Edit",
-            "Type" => "Replicon.Suite.Domain.EntryTimesheet",
-            "Identity" => (string)$timesheet,
+            "Action"     => "Edit",
+            "Type"       => "Replicon.Suite.Domain.EntryTimesheet",
+            "Identity"   => (string)$timesheet,
             "Operations" => [
                 [
                     "__operation" => "CollectionAdd",
-                    "Collection" => "TimeEntries",
-                    "Operations" => [
+                    "Collection"  => "TimeEntries",
+                    "Operations"  => [
                         [
-                            "__operation" => "SetProperties",
+                            "__operation"           => "SetProperties",
                             "CalculationModeObject" => [
-                                "__type" => "Replicon.TimeSheet.Domain.CalculationModeObject",
-                                "Identity" => "CalculateOutTime"
+                                "Type"       => "Replicon.TimeSheet.Domain.CalculationModeObject",
+                                "Identity"   => "CalculateInOutTime",
+                                "Properties" => [
+                                    "Name" => "CalculationModeObject_CalculateInOutTime"
+                                ]
                             ],
-                            "EntryDate" => [
+                            "EntryDate"             => [
                                 "__type" => "Date",
-                                "Year" => $date[0],
-                                "Month" => $date[1],
-                                "Day" => $date[2]
+                                "Year"   => $date[0],
+                                "Month"  => $date[1],
+                                "Day"    => $date[2]
                             ],
-                            "Duration" => [
+                            "Duration"              => [
                                 "__type" => "Timespan",
-                                "Hours" => $duration
+                                "Hours"  => $duration
                             ],
-                            "Comments" => $comment,
-                            "Task" => [
+                            "Comments"              => $comment,
+                            "Task"                  => [
                                 "Identity" => (string)$code
                             ]
                         ]
