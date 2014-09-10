@@ -25,24 +25,14 @@ class TogglToJira
     protected $notLoggedTimes = array();
 
     /**
-     * @var int
-     */
-    protected $workspace_id;
-
-    /**
-     * @var string
-     */
-    protected $user_agent;
-
-    /**
-     * @var string
-     */
-    protected $api_token;
-
-    /**
      * @var array
      */
     protected $jira;
+
+    /**
+     * @var Toggl
+     */
+    protected $_toggl;
 
     /**
      * Initialize class
@@ -50,10 +40,9 @@ class TogglToJira
     public function __construct()
     {
         // Toggl values
-        $toggl = sfYaml::load('toggl.yaml');
-        $this->workspace_id = $toggl['workspace_id'];
-        $this->user_agent = $toggl['user_agent'];
-        $this->api_token = $toggl['api_token'];
+        $toggl_config = sfYaml::load('toggl.yaml');
+        $this->_toggl = new Toggl($toggl_config['workspace_id'], $toggl_config['api_token']);
+        $this->_toggl->user_agent = $toggl_config['user_agent'];
 
         // Jira values
         $this->jira = sfYaml::load('jira.yaml');
@@ -80,43 +69,13 @@ class TogglToJira
     }
 
     /**
-     * Get tasks from Toggl for $rundate.  Will set $rundate to yesterday if not supplied
-     *
-     * @param string $rundate
-     * @return array
-     */
-    protected function getTimeEntries($rundate = null, $enddate = null)
-    {
-        if (empty($rundate)) {
-            $rundate = date('Y-m-d', time() - 86400);
-        }
-        if (empty($enddate)) {
-            $enddate = $rundate;
-        }
-        $report_url = 'https://toggl.com/reports/api/v2/details?user_agent=' . $this->user_agent . '&since=' . $rundate . '&until=' . $enddate . '&workspace_id=' . $this->workspace_id;
-
-        try {
-            $client = new GuzzleHttp\Client();
-            $request = $client->createRequest('GET', $report_url, [
-                'auth' => [$this->api_token, 'api_token']
-            ]);
-            $request->setHeader('Content-Type', 'application/json');
-            $response = $client->send($request);
-            return json_decode($response->getBody())->data;
-        } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-            $raw_response = explode("\n", $e->getResponse());
-            throw new Exception(end($raw_response));
-        }
-    }
-
-    /**
      *  Main entry point
      *
      * @param string $rundate
      */
     public function run($rundate = null, $enddate = null)
     {
-        $entries = $this->getTimeEntries($rundate, $enddate);
+        $entries = $this->_toggl->getTimeEntries($rundate, $enddate);
         $clients = $this->getClients();
         $sites = $this->getSites();
         foreach ($entries as $entry) {
