@@ -1,61 +1,16 @@
 <?php
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Subscriber\Log\LogSubscriber;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-
-class Replicon
+class Replicon extends \Constant\Service
 {
-    private $companyKey = '';
-    private $uri        = '';
-    private $username   = '';
-    private $password   = '';
-    public  $_debug     = false;
-
-    protected $_errorno;
-
-    protected $_error;
-
-    protected $_status;
-
-    public function __construct($companyKey, $username, $password, $version = '8.29.66')
+    public function __construct($username, $password, $options = [])
     {
-        $this->companyKey = $companyKey;
+        $companyKey = $options['companyKey'];
+        $version = isset($options['version']) ? $options['version'] : '8.29.66';
         $this->uri = "https://na1.replicon.com/{$companyKey}/RemoteApi/RemoteApi.ashx/{$version}/";
         $this->username = $username;
         $this->password = $password;
-    }
 
-    private function submitPost($data)
-    {
-
-        try {
-            $client = new GuzzleHttp\Client();
-
-            // create a log channel
-            $log = new Logger('Replicon');
-            $log->pushHandler(new StreamHandler('replicon.log', Logger::DEBUG));
-
-            $subscriber = new LogSubscriber($log);
-            $client->getEmitter()->attach($subscriber);
-
-            $response = $client->post($this->uri, [
-                'auth'    => [$this->username, $this->password],
-                'headers' => [
-                    'X-Replicon-Security-Context' => 'User',
-                    'Content-Type'                => 'application/json'
-                ],
-                'body'    => $data
-            ]);
-
-            return json_decode($response->getBody());
-        } catch (\GuzzleHttp\Exception\BadResponseException $e) {
-            echo $e->getRequest();
-            if ($e->hasResponse()) {
-                echo $e->getResponse();
-            }
-        }
+        $this->_headers['X-Replicon-Security-Context'] = 'User';
     }
 
     public function getTimesheetByUseridDate($userid, $date)
@@ -83,7 +38,7 @@ class Replicon
         ];
         $data = json_encode($data);
 
-        $response = $this->submitPost($data);
+        $response = $this->processRequest($data);
         $this->_handleError($data, $response);
         return $response->Value[0]->Identity;
     }
@@ -100,7 +55,7 @@ class Replicon
         );
         $data = json_encode($data);
 
-        $response = $this->submitPost($data);
+        $response = $this->processRequest($data);
         $this->_handleError($data, $response);
         return $response->Value[0]->Properties;
     }
@@ -117,7 +72,7 @@ class Replicon
         );
         $data = json_encode($data);
 
-        $response = $this->submitPost($data);
+        $response = $this->processRequest($data);
         $this->_handleError($data, $response);
         return $response->Value[0]->Properties;
     }
@@ -165,23 +120,9 @@ class Replicon
 
         $data = json_encode($data);
 
-        $response = $this->submitPost($data);
+        $response = $this->processRequest($data);
         $this->_handleError($data, $response);
         //return $response->Value[0]->Properties;
-    }
-
-    public function _handleError($data, $response)
-    {
-        if ($this->_debug) {
-            echo "Request:\n";
-            echo "**********\n";
-            print_r($data);
-            echo "\n**********\n";
-            echo "Response:\n";
-            echo "**********\n";
-            print_r($response);
-            echo "\n**********\n";
-        }
     }
 
 }
