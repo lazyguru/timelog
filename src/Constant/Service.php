@@ -33,11 +33,7 @@ abstract class Service {
     {
         $this->_headers['Content-Type'] = 'application/json';
         try {
-            $client = new \GuzzleHttp\Client([
-                'defaults' => [
-                    'proxy' => 'localhost:8888'
-                ]
-            ]);
+            $client = new \GuzzleHttp\Client();
 
             // create a log channel
             $log = new Logger(__CLASS__);
@@ -49,8 +45,7 @@ abstract class Service {
             $response = $client->post($this->uri, [
                 'auth'    => [$this->username, $this->password],
                 'headers' => $this->_headers,
-                'body'    => $data,
-                'verify'  => false
+                'body'    => $data
             ]);
 
             return json_decode($response->getBody());
