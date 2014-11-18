@@ -1,11 +1,14 @@
-<?php namespace Constant;
+<?php namespace Constant\Timelog\Service;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Subscriber\Log\LogSubscriber;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
-abstract class Service {
+abstract class BaseService {
+
+    const POST = 'post';
+    const GET  = 'get';
 
     public    $_debug   = false;
     protected $_headers = [];
@@ -18,6 +21,7 @@ abstract class Service {
     public function _handleError($data, $response)
     {
         if ($this->_debug) {
+            echo 'Class: ' . get_class($this) . "\n";
             echo "Request:\n";
             echo "**********\n";
             print_r($data);
@@ -29,20 +33,20 @@ abstract class Service {
         }
     }
 
-    protected function processRequest($data)
+    protected function processRequest($data, $method = self::POST)
     {
         $this->_headers['Content-Type'] = 'application/json';
         try {
             $client = new \GuzzleHttp\Client();
 
             // create a log channel
-            $log = new Logger(__CLASS__);
-            $log->pushHandler(new StreamHandler(__CLASS__ . '.log', Logger::DEBUG));
+            $log = new Logger(get_class($this));
+            $log->pushHandler(new StreamHandler(get_class($this) . '.log', Logger::DEBUG));
 
             $subscriber = new LogSubscriber($log);
             $client->getEmitter()->attach($subscriber);
 
-            $response = $client->post($this->uri, [
+            $response = $client->$method($this->uri, [
                 'auth'    => [$this->username, $this->password],
                 'headers' => $this->_headers,
                 'body'    => $data
