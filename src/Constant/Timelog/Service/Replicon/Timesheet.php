@@ -1,6 +1,8 @@
-<?php namespace Replicon;
+<?php namespace Constant\Timelog\Service\Replicon;
 
-class Timesheet extends \Constant\Service
+use Constant\Timelog\Service\BaseService;
+
+class Timesheet extends BaseService
 {
 
     private $id;

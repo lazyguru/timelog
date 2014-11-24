@@ -1,6 +1,8 @@
-<?php
+<?php namespace Constant\Timelog\Service\Replicon;
 
-class Replicon extends \Constant\Service
+use Constant\Timelog\Service\BaseService;
+
+class RepliconService extends BaseService
 {
     public function __construct($username, $password, $options = [])
     {

@@ -7,6 +7,11 @@ TogglToJira provides integration between [Toggl](http://toggl.com) time tracking
 
 ## Pre-Requisites ##
 * Composer
+* A [Toggl](https://toggl.com) Account
+  * Have your Toggl account set to not use start/stop times (I have not tested what will happen if you use start/stop times, but I suspect it will mess up your Toggl data)
+  * The description you use for your time entry in Toggl becomes the worklog description in Jira as well as the comment in Replicon
+  * You have to set the Jira ticket number as a tag on the time entry in Toggl
+  * The time entry will be updated with a Jira tag so that it is not logged in Jira again
 
 ## Install ##
 1. Download and unzip (or clone using git) the TogglToJira project. It can be stored in your home directory,
@@ -21,9 +26,17 @@ TogglToJira provides integration between [Toggl](http://toggl.com) time tracking
 ## Usage ##
 To run TogglToJira, from the command line in the root directory of your TogglToJira project execute 
 ```
-php bootstrap.php 2014-07-29 2014-07-30
+./timelog --jira 2014-07-29 2014-07-30
 ```
-Start and end date are optional.  If you leave off end date, it will run for only start date.  If you leave off both dates, it will run for yesterday.
+or
+```
+./timelog --replicon 2014-07-29 2014-07-30
+```
+or
+```
+./timelog --all 2014-07-29 2014-07-30
+```
+End date is optional.  If you leave off end date, it will run for only start date.
 
 ## License ##
 TogglToJira by Joe Constant is licensed under the [MIT license](http://opensource.org/licenses/MIT)
