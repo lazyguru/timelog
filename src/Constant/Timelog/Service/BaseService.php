@@ -1,6 +1,7 @@
 <?php namespace Constant\Timelog\Service;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Subscriber\Log\LogSubscriber;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
@@ -9,6 +10,7 @@ abstract class BaseService {
 
     const POST = 'post';
     const GET  = 'get';
+    const PUT  = 'put';
 
     public    $_debug   = false;
     protected $_headers = [];
@@ -37,7 +39,7 @@ abstract class BaseService {
     {
         $this->_headers['Content-Type'] = 'application/json';
         try {
-            $client = new \GuzzleHttp\Client();
+            $client = new Client();
 
             // create a log channel
             $log = new Logger(get_class($this));
@@ -53,7 +55,7 @@ abstract class BaseService {
             ]);
 
             return json_decode($response->getBody());
-        } catch (\GuzzleHttp\Exception\BadResponseException $e) {
+        } catch (BadResponseException $e) {
             echo $e->getRequest();
             if ($e->hasResponse()) {
                 echo $e->getResponse();

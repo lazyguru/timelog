@@ -1,16 +1,17 @@
 <?php namespace Constant\Timelog\Command;
 
+use Constant\Timelog\Service\Jira\JiraService;
+use Constant\Timelog\Service\Replicon\RepliconService;
 use Constant\Timelog\Service\Replicon\Timesheet;
-use sfYaml;
+use Constant\Timelog\Service\Toggl\TimeEntry;
+use Constant\Timelog\Service\Toggl\TogglService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
-use Constant\Timelog\Service\Jira\JiraService;
-use Constant\Timelog\Service\Toggl\TogglService;
-use Constant\Timelog\Service\Replicon\RepliconService;
+use Symfony\Component\Yaml\Yaml;
 
 class TimelogCommand extends Command
 {
@@ -26,57 +27,22 @@ class TimelogCommand extends Command
     protected $logger;
     protected $_jiraInstances;
 
-    protected function configure()
+    /**
+     * Constructor.
+     *
+     * @param string|null $name The name of the command; passing null means it must be set in configure()
+     *
+     * @throws \LogicException When the command name is empty
+     *
+     * @api
+     */
+    public function __construct($name = null)
     {
-        $this
-            ->setName('timelog:process')
-            ->setDescription('Process Toggl Time Entries')
-            ->addArgument(
-                'start_date',
-                InputArgument::REQUIRED,
-                'What is the starting date?'
-            )
-            ->addArgument(
-                'end_date',
-                InputArgument::OPTIONAL,
-                'What is the ending date?'
-            )
-            ->addOption(
-                'jira',
-                null,
-                InputOption::VALUE_NONE,
-                'If set, Jira Worklogs will be created'
-            )
-            ->addOption(
-                'replicon',
-                null,
-                InputOption::VALUE_NONE,
-                'If set, Replicon will be updated'
-            )
-            ->addOption(
-                'all',
-                null,
-                InputOption::VALUE_NONE,
-                'If set, both Replicon and Jira will be updated'
-            )
-        ;
-
-        /*
-        // green text
-        $output->writeln('<info>foo</info>');
-
-        // yellow text
-        $output->writeln('<comment>foo</comment>');
-
-        // black text on a cyan background
-        $output->writeln('<question>foo</question>');
-
-        // white text on a red background
-        $output->writeln('<error>foo</error>');
-        */
+        $this->setDescription('Converts time log entries from Toggl to Jira and/or Replicon');
+        parent::__construct($name);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         $this->logger = new ConsoleLogger($output);
 
@@ -99,7 +65,7 @@ class TimelogCommand extends Command
         }
 
         // Toggl values
-        $toggl_config = sfYaml::load('toggl.yaml');
+        $toggl_config = Yaml::parse('toggl.yaml');
         $toggl = new TogglService($toggl_config['workspace_id'], $toggl_config['api_token']);
         $toggl->user_agent = $toggl_config['user_agent'];
 
@@ -110,7 +76,7 @@ class TimelogCommand extends Command
         }
 
         if ($replicon) {
-            $replicon_config = sfYaml::load('replicon.yaml');
+            $replicon_config = Yaml::parse('replicon.yaml');
             $r = new RepliconService(
                 $replicon_config['username'],
                 $replicon_config['password'],
@@ -133,35 +99,29 @@ class TimelogCommand extends Command
             $loggedTimes = [];
             $toBeLogged = [];
             foreach ($entries as $entry) {
-                $ticket = $entry->description;
-                $date = date('Y-m-d', strtotime($entry->start));
-                $client = $entry->client;
-                $time = $entry->dur;
-                $time = $time / 60 / 1000 / 60;
-                $taskCode = filter_var($entry->task, FILTER_SANITIZE_NUMBER_FLOAT,FILTER_FLAG_ALLOW_FRACTION);
-                if (strpos($taskCode, '-') !== false) {
-                    $taskCode = str_replace('-', '', $taskCode);
+                if (!isset($toBeLogged[$entry->getTask()])) {
+                    $toBeLogged[$entry->getTask()] = [];
                 }
-                $taskCode = $entry->project . $taskCode;
-                if (!isset($toBeLogged[$taskCode])) {
-                    $toBeLogged[$taskCode] = [];
-                }
-                if (!isset($toBeLogged[$taskCode][$date])) {
-                    $toBeLogged[$taskCode][$date] = [
-                        'time'   => 0,
+                if (!isset($toBeLogged[$entry->getTask()][$entry->getEntryDate()])) {
+                    $toBeLogged[$entry->getTask()][$entry->getEntryDate()] = [
+                        'time' => 0,
                         'ticket' => []
                     ];
                 }
-                $toBeLogged[$taskCode][$date]['time'] += $time;
-                $toBeLogged[$taskCode][$date]['ticket'][] = $ticket;
-                $loggedTimes[] = "{$client} ticket {$ticket} was logged on {$date} for {$time}h";
+                $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['time'] += $entry->getDuration();
+                $ticket = $entry->getTicket();
+                if (empty($ticket)) {
+                    $ticket = $entry->getDescription();
+                }
+                $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['ticket'][] = $ticket;
+                $loggedTimes[] = "{$entry->getClient()} ticket {$entry->getTicket()} was logged on {$entry->getEntryDate()} for {$entry->getDuration()}h";
             }
             $t->setId($timesheet);
-            foreach($toBeLogged as $taskid => $entries) {
+            foreach ($toBeLogged as $taskid => $entries) {
                 $task = $t->createTask($taskid);
                 $cells = [];
                 $cells[] = $task;
-                foreach($entries as $date => $entry) {
+                foreach ($entries as $date => $entry) {
                     $cell = $t->createCell($date, $entry['time'], implode(',', $entry['ticket']));
                     $cells[] = $cell;
                 }
@@ -176,53 +136,18 @@ class TimelogCommand extends Command
     }
 
     /**
-     * @param $jiraConfig
-     *
-     * @return array
-     */
-    protected function _initiailzeJiraInstances($jiraConfig)
-    {
-        $this->_jiraInstances = [];
-
-        foreach($jiraConfig['Sites'] as $key => $site) {
-            $this->_jiraInstances[$key] = new JiraService($site['user'], $site['pass'], ['site' => $site['url']]);
-        }
-
-        return $this->_jiraInstances;
-    }
-
-    /**
-     * @param $entry
-     */
-    protected function _processJiraTimeEntry($clients, $entry)
-    {
-        $ticket = $entry->description;
-        $date   = date('Y-m-d', strtotime($entry->start));
-        $time   = $entry->dur;
-        $time   = $time / 60 / 1000 / 60;
-        $client = $entry->client;
-        if (!isset($clients[$client])) {
-            $this->notLoggedTimes[] = "{$client} task {$ticket} was NOT logged on {$date} for {$time}h";
-            return;
-        }
-        $clientSite = $clients[$client]['site'];
-        $this->getJiraInstance($clientSite)->setWorklog($date, $ticket, $time);
-        $this->loggedTimes[] = "{$client} ticket {$ticket} was logged on {$date} for {$time}h";
-    }
-
-    /**
-     * @param $entries
+     * @param array $entries
      */
     protected function _processJira($entries)
     {
         // Jira values
-        $jiraConfig = sfYaml::load('jira.yaml');
+        $jiraConfig = Yaml::parse('jira.yaml');
 
         $clients = $jiraConfig['Clients'];
 
         $this->_initiailzeJiraInstances($jiraConfig);
         foreach ($entries as $entry) {
-            $this->_processJiraTimeEntry($clients, $entry);
+            $entry = $this->_processJiraTimeEntry($clients, $entry);
         }
         asort($this->loggedTimes);
         asort($this->notLoggedTimes);
@@ -231,6 +156,48 @@ class TimelogCommand extends Command
         $this->logger->info("******* No Jira Worklogs Created ********");
         $this->logger->info(print_r($this->notLoggedTimes, true));
         $this->logger->info("*****************************************");
+    }
+
+    /**
+     * @param $jiraConfig
+     *
+     * @return array
+     */
+    protected function _initiailzeJiraInstances($jiraConfig)
+    {
+        $this->_jiraInstances = [];
+
+        foreach ($jiraConfig['Sites'] as $key => $site) {
+            $this->_jiraInstances[$key] = new JiraService($site['user'], $site['pass'], ['site' => $site['url']]);
+        }
+
+        return $this->_jiraInstances;
+    }
+
+    /**
+     * @param $clients
+     * @param TimeEntry $entry
+     * @return \Constant\Timelog\Service\Toggl\TimeEntry
+     */
+    protected function _processJiraTimeEntry($clients, $entry)
+    {
+        $description = $entry->getDescription();
+        $date = $entry->getEntryDate();
+        $time = $entry->getDuration();
+        $client = $entry->getClient();
+        $ticket = $entry->getTicket();
+        if (!isset($clients[$client])) {
+            $this->notLoggedTimes[] = "{$client} task {$ticket} was NOT logged on {$date} for {$time}h";
+            return $entry;
+        }
+        if (!$entry->isLogged()) {
+            $clientSite = $clients[$client]['site'];
+            $this->getJiraInstance($clientSite)->setWorklog($date, $ticket, $time, $description);
+            $entry->addTag('Jira'); // Mark as logged so we don't log it again in the future
+            $entry = $entry->save();
+        }
+        $this->loggedTimes[] = "{$client} ticket {$ticket} was logged on {$date} for {$time}h";
+        return $entry;
     }
 
     /**
@@ -244,5 +211,54 @@ class TimelogCommand extends Command
             return $this->_jiraInstances[$clientSite];
         }
         return null;
+    }
+
+    protected function configure()
+    {
+        $this
+            ->setName('process')
+            ->setDescription('Process Toggl Time Entries')
+            ->addArgument(
+                'start_date',
+                InputArgument::REQUIRED,
+                'The starting date.'
+            )
+            ->addArgument(
+                'end_date',
+                InputArgument::OPTIONAL,
+                'The ending date.'
+            )
+            ->addOption(
+                'jira',
+                null,
+                InputOption::VALUE_NONE,
+                'If set, Jira Worklogs will be created'
+            )
+            ->addOption(
+                'replicon',
+                null,
+                InputOption::VALUE_NONE,
+                'If set, Replicon will be updated'
+            )
+            ->addOption(
+                'all',
+                null,
+                InputOption::VALUE_NONE,
+                'If set, both Replicon and Jira will be updated'
+            );
+
+        /*
+        // green text
+        $output->writeln('<info>foo</info>');
+
+        // yellow text
+        $output->writeln('<comment>foo</comment>');
+
+        // black text on a cyan background
+        $output->writeln('<question>foo</question>');
+
+        // white text on a red background
+        $output->writeln('<error>foo</error>');
+        */
     }
 }
