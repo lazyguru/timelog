@@ -1,6 +1,7 @@
 <?php namespace Constant\Timelog\Service\Jira;
 
 use Constant\Timelog\Service\BaseService;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class TogglToJira
@@ -20,9 +21,14 @@ class JiraService extends BaseService
 
     /**
      * Initialize class
+     * @param OutputInterface $output
+     * @param $username
+     * @param $password
+     * @param array $options
      */
-    public function __construct($username, $password, $options = [])
+    public function __construct(OutputInterface $output, $username, $password, $options = [])
     {
+        $this->output = $output;
         $this->site = $options['site'];
         $this->username = $username;
         $this->password = $password;
@@ -54,6 +60,7 @@ class JiraService extends BaseService
             'comment'   => $comment
         ];
 
+        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
         $data = json_encode($data);
 
         $response = $this->processRequest($data);

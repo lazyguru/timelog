@@ -1,6 +1,7 @@
 <?php namespace Constant\Timelog\Service\Replicon;
 
 use Constant\Timelog\Service\BaseService;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class Timesheet extends BaseService
 {
@@ -31,8 +32,16 @@ class Timesheet extends BaseService
 
     protected $_timeRows = [];
 
-    public function __construct($username, $password, $options = [])
+    /**
+     * Initialize class
+     * @param OutputInterface $output
+     * @param $username
+     * @param $password
+     * @param array $options
+     */
+    public function __construct(OutputInterface $output, $username, $password, $options = [])
     {
+        $this->output = $output;
         $companyKey = $options['companyKey'];
         $version = isset($options['version']) ? $options['version'] : '8.29.66';
         $this->uri = "https://na1.replicon.com/{$companyKey}/RemoteApi/RemoteApi.ashx/{$version}/";
@@ -55,8 +64,10 @@ class Timesheet extends BaseService
             "Identity"   => (string)$this->getId(),
             "Operations" => $this->_timeRows
         ];
+        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
         $data = json_encode($data);
-        $resp = $this->processRequest($data);
+        $response = $this->processRequest($data);
+        $this->_handleError($data, $response);
     }
 
     public function createCell($date, $duration, $comment)
@@ -110,6 +121,7 @@ class Timesheet extends BaseService
                 $taskCode
             ]
         ];
+        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
         $data = json_encode($data);
 
         $response = $this->processRequest($data);

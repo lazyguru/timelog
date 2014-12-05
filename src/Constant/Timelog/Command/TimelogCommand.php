@@ -9,7 +9,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -24,7 +23,6 @@ class TimelogCommand extends Command
      * @var array
      */
     protected $notLoggedTimes = [];
-    protected $logger;
     protected $_jiraInstances;
 
     /**
@@ -44,8 +42,6 @@ class TimelogCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->logger = new ConsoleLogger($output);
-
         $rundate = $input->getArgument('start_date');
         $enddate = $input->getArgument('end_date');
         if (!isset($enddate)) {
@@ -66,13 +62,13 @@ class TimelogCommand extends Command
 
         // Toggl values
         $toggl_config = Yaml::parse('toggl.yaml');
-        $toggl = new TogglService($toggl_config['workspace_id'], $toggl_config['api_token']);
+        $toggl = new TogglService($output, $toggl_config['workspace_id'], $toggl_config['api_token']);
         $toggl->user_agent = $toggl_config['user_agent'];
 
         $entries = $toggl->getTimeEntries($rundate, $enddate);
 
         if ($jira) {
-            $this->_processJira($entries);
+            $this->_processJira($entries, $output);
         }
 
         if ($replicon) {
@@ -129,46 +125,49 @@ class TimelogCommand extends Command
             }
             $t->saveTimesheet();
             asort($loggedTimes);
-            $this->logger->debug("******** Created Replicon Entries **********");
-            $this->logger->debug(print_r($loggedTimes, true));
-            $this->logger->debug("*****************************************");
         }
     }
 
     /**
      * @param array $entries
+     * @param OutputInterface $output
      */
-    protected function _processJira($entries)
+    protected function _processJira($entries, OutputInterface $output)
     {
         // Jira values
         $jiraConfig = Yaml::parse('jira.yaml');
 
         $clients = $jiraConfig['Clients'];
 
-        $this->_initiailzeJiraInstances($jiraConfig);
+        $this->_initiailzeJiraInstances($output, $jiraConfig);
         foreach ($entries as $entry) {
             $entry = $this->_processJiraTimeEntry($clients, $entry);
         }
         asort($this->loggedTimes);
         asort($this->notLoggedTimes);
-        $this->logger->info("******** Created Jira Worklogs **********");
-        $this->logger->info(print_r($this->loggedTimes, true));
-        $this->logger->info("******* No Jira Worklogs Created ********");
-        $this->logger->info(print_r($this->notLoggedTimes, true));
-        $this->logger->info("*****************************************");
+        $output->writeln('<info>******** Created Jira Worklogs **********</info>');
+        foreach($this->loggedTimes as $time) {
+            $output->writeln("<info>{$time}</info>");
+        }
+        $output->writeln('<info>******* Jira Worklogs Not Created ********</info>');
+        foreach($this->notLoggedTimes as $time) {
+            $output->writeln("<comment>{$time}</comment>");
+        }
+        $output->writeln('<info>"*****************************************"</info>');
     }
 
     /**
+     * @param OutputInterface $output
      * @param $jiraConfig
      *
      * @return array
      */
-    protected function _initiailzeJiraInstances($jiraConfig)
+    protected function _initiailzeJiraInstances(OutputInterface $output, $jiraConfig)
     {
         $this->_jiraInstances = [];
 
         foreach ($jiraConfig['Sites'] as $key => $site) {
-            $this->_jiraInstances[$key] = new JiraService($site['user'], $site['pass'], ['site' => $site['url']]);
+            $this->_jiraInstances[$key] = new JiraService($output, $site['user'], $site['pass'], ['site' => $site['url']]);
         }
 
         return $this->_jiraInstances;
@@ -217,7 +216,7 @@ class TimelogCommand extends Command
     {
         $this
             ->setName('process')
-            ->setDescription('Process Toggl Time Entries')
+            ->setDescription('Converts time log entries from Toggl to Jira and/or Replicon')
             ->addArgument(
                 'start_date',
                 InputArgument::REQUIRED,

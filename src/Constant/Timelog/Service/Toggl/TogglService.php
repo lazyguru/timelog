@@ -1,6 +1,7 @@
 <?php namespace Constant\Timelog\Service\Toggl;
 
 use Constant\Timelog\Service\BaseService;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Class Toggl
@@ -23,9 +24,14 @@ class TogglService extends BaseService
 
     /**
      * Initialize class
+     * @param OutputInterface $output
+     * @param $workspace
+     * @param $api_token
+     * @param array $options
      */
-    public function __construct($workspace, $api_token, $options =[])
+    public function __construct(OutputInterface $output, $workspace, $api_token, $options =[])
     {
+        $this->output = $output;
         $this->username = $api_token;
         $this->password = 'api_token';
         $this->workspace_id = $workspace;
@@ -56,6 +62,7 @@ class TogglService extends BaseService
             //]
         ];
 
+        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
         $data = json_encode($data);
 
         $response = $this->processRequest($data, self::PUT);
