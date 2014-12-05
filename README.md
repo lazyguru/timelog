@@ -24,6 +24,7 @@ Timelog provides integration between [Toggl](http://toggl.com) time tracking sof
   * toggl.yaml.sample -> toggl.yaml
     * If you intend to make changes, please change user_agent to your email address so that Toggl can let you
       know if you are doing anything really bad
+  * replicon.yaml.sample -> replicon.yaml
 
 ## Usage ##
 To run Timelog, from the command line in the root directory of your Timelog project execute 
