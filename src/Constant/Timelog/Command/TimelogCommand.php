@@ -25,21 +25,6 @@ class TimelogCommand extends Command
     protected $notLoggedTimes = [];
     protected $_jiraInstances;
 
-    /**
-     * Constructor.
-     *
-     * @param string|null $name The name of the command; passing null means it must be set in configure()
-     *
-     * @throws \LogicException When the command name is empty
-     *
-     * @api
-     */
-    public function __construct($name = null)
-    {
-        $this->setDescription('Converts time log entries from Toggl to Jira and/or Replicon');
-        parent::__construct($name);
-    }
-
     public function execute(InputInterface $input, OutputInterface $output)
     {
         $rundate = $input->getArgument('start_date');
@@ -72,59 +57,7 @@ class TimelogCommand extends Command
         }
 
         if ($replicon) {
-            $replicon_config = Yaml::parse('replicon.yaml');
-            $r = new RepliconService(
-                $replicon_config['username'],
-                $replicon_config['password'],
-                [
-                    'companyKey' => $replicon_config['company']
-                ]
-            );
-            $t = new Timesheet(
-                $replicon_config['username'],
-                $replicon_config['password'],
-                [
-                    'companyKey' => $replicon_config['company']
-                ]
-            );
-
-            $user = $r->findUseridByLogin($replicon_config['username']);
-            $timesheet = $r->getTimesheetByUseridDate($user->Id, $rundate);
-
-            $taskCache = [];
-            $loggedTimes = [];
-            $toBeLogged = [];
-            foreach ($entries as $entry) {
-                if (!isset($toBeLogged[$entry->getTask()])) {
-                    $toBeLogged[$entry->getTask()] = [];
-                }
-                if (!isset($toBeLogged[$entry->getTask()][$entry->getEntryDate()])) {
-                    $toBeLogged[$entry->getTask()][$entry->getEntryDate()] = [
-                        'time' => 0,
-                        'ticket' => []
-                    ];
-                }
-                $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['time'] += $entry->getDuration();
-                $ticket = $entry->getTicket();
-                if (empty($ticket)) {
-                    $ticket = $entry->getDescription();
-                }
-                $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['ticket'][] = $ticket;
-                $loggedTimes[] = "{$entry->getClient()} ticket {$entry->getTicket()} was logged on {$entry->getEntryDate()} for {$entry->getDuration()}h";
-            }
-            $t->setId($timesheet);
-            foreach ($toBeLogged as $taskid => $entries) {
-                $task = $t->createTask($taskid);
-                $cells = [];
-                $cells[] = $task;
-                foreach ($entries as $date => $entry) {
-                    $cell = $t->createCell($date, $entry['time'], implode(',', $entry['ticket']));
-                    $cells[] = $cell;
-                }
-                $t->addTimeRow($cells);
-            }
-            $t->saveTimesheet();
-            asort($loggedTimes);
+            $this->processReplicon($rundate, $entries, $output);
         }
     }
 
@@ -229,19 +162,19 @@ class TimelogCommand extends Command
             )
             ->addOption(
                 'jira',
-                null,
+                'j',
                 InputOption::VALUE_NONE,
                 'If set, Jira Worklogs will be created'
             )
             ->addOption(
                 'replicon',
-                null,
+                'r',
                 InputOption::VALUE_NONE,
                 'If set, Replicon will be updated'
             )
             ->addOption(
                 'all',
-                null,
+                'a',
                 InputOption::VALUE_NONE,
                 'If set, both Replicon and Jira will be updated'
             );
@@ -259,5 +192,74 @@ class TimelogCommand extends Command
         // white text on a red background
         $output->writeln('<error>foo</error>');
         */
+    }
+
+    /**
+     * @param $rundate
+     * @param $entries
+     * @param OutputInterface $output
+     */
+    protected function processReplicon($rundate, $entries, OutputInterface $output)
+    {
+        $replicon_config = Yaml::parse('replicon.yaml');
+        $r = new RepliconService(
+            $output,
+            $replicon_config['username'],
+            $replicon_config['password'],
+            [
+                'companyKey' => $replicon_config['company']
+            ]
+        );
+        $t = new Timesheet(
+            $output,
+            $replicon_config['username'],
+            $replicon_config['password'],
+            [
+                'companyKey' => $replicon_config['company']
+            ]
+        );
+
+        $user = $r->findUseridByLogin($replicon_config['username']);
+        $timesheet = $r->getTimesheetByUseridDate($user->Id, $rundate);
+
+        $taskCache = [];
+        $loggedTimes = [];
+        $toBeLogged = [];
+        foreach ($entries as $entry) {
+            if (!isset($toBeLogged[$entry->getTask()])) {
+                $toBeLogged[$entry->getTask()] = [];
+            }
+            if (!isset($toBeLogged[$entry->getTask()][$entry->getEntryDate()])) {
+                $toBeLogged[$entry->getTask()][$entry->getEntryDate()] = [
+                    'time' => 0,
+                    'ticket' => []
+                ];
+            }
+            $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['time'] += $entry->getDuration();
+            $ticket = $entry->getTicket();
+            if (empty($ticket)) {
+                $ticket = $entry->getDescription();
+            }
+            $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['ticket'][] = $ticket;
+            $loggedTimes[] = "{$entry->getClient()} entry {$entry->getDescription()} was logged on {$entry->getEntryDate()} for {$entry->getDuration()}h";
+        }
+        $t->setId($timesheet);
+        foreach ($toBeLogged as $taskid => $entries) {
+            $task = $t->createTask($taskid);
+            $cells = [];
+            $cells[] = $task;
+            foreach ($entries as $date => $entry) {
+                $cell = $t->createCell($date, $entry['time'], implode(',', $entry['ticket']));
+                $cells[] = $cell;
+            }
+            $t->addTimeRow($cells);
+        }
+        $t->saveTimesheet();
+        asort($loggedTimes);
+        $output->writeln('<info>******** Created Replicon Entries **********</info>');
+        foreach($loggedTimes as $time) {
+            $output->writeln("<info>{$time}</info>");
+        }
+        $output->writeln('<info>*****************************************</info>');
     }
 }

@@ -47,19 +47,17 @@ class TogglService extends BaseService
         $endTime = $startTime + $entry->getDurationTime();
         $this->uri = 'https://www.toggl.com/api/v8/time_entries/' . $entry->getId();
         $data = [
-            //'time_entry' => [
-                'time_entry' => [
-                    'description'  => $entry->getDescription(),
-                    'start'        => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $startTime), 0, 22) . ':00',
-                    'stop'         => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $endTime), 0, 22) . ':00',
-                    'billable'     => $entry->isBillable(),
-                    'wid'          => $this->workspace_id,
-                    'duration'     => $entry->getDurationTime(),
-                    'tags'         => $entry->getTags(),
-                    'id'           => $entry->getId(),
-                    'created_with' => $this->user_agent
-                ]
-            //]
+            'time_entry' => [
+                'description'  => $entry->getDescription(),
+                'start'        => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $startTime), 0, 22) . ':00',
+                'stop'         => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $endTime), 0, 22) . ':00',
+                'billable'     => $entry->isBillable(),
+                'wid'          => $this->workspace_id,
+                'duration'     => $entry->getDurationTime(),
+                'tags'         => $entry->getTags(),
+                'id'           => $entry->getId(),
+                'created_with' => $this->user_agent
+            ]
         ];
 
         $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
