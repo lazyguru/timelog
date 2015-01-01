@@ -33,15 +33,17 @@ abstract class BaseService {
 
     public function _handleError($data, $response)
     {
-        $this->output->writeln('<debug>' . 'Class: ' . get_class($this) . '</debug>');
-        $this->output->writeln('<debug>' . 'Request: ' . '</debug>');
-        $this->output->writeln('<debug>' . '**********' . '</debug>');
-        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
-        $this->output->writeln('<debug>' . '**********' . '</debug>');
-        $this->output->writeln('<debug>' . 'Response: ' . '</debug>');
-        $this->output->writeln('<debug>' . '**********' . '</debug>');
-        $this->output->writeln('<debug>' . print_r($response, true) . '</debug>');
-        $this->output->writeln('<debug>' . '**********' . '</debug>');
+        if (OutputInterface::VERBOSITY_DEBUG <= $this->output->getVerbosity()) {
+            $this->output->writeln('<debug>' . 'Class: ' . get_class($this) . '</debug>');
+            $this->output->writeln('<debug>' . 'Request: ' . '</debug>');
+            $this->output->writeln('<debug>' . '**********' . '</debug>');
+            $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
+            $this->output->writeln('<debug>' . '**********' . '</debug>');
+            $this->output->writeln('<debug>' . 'Response: ' . '</debug>');
+            $this->output->writeln('<debug>' . '**********' . '</debug>');
+            $this->output->writeln('<debug>' . print_r($response, true) . '</debug>');
+            $this->output->writeln('<debug>' . '**********' . '</debug>');
+        }
     }
 
     protected function processRequest($data, $method = self::POST)

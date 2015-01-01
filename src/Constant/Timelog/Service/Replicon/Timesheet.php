@@ -64,7 +64,9 @@ class Timesheet extends BaseService
             "Identity"   => (string)$this->getId(),
             "Operations" => $this->_timeRows
         ];
-        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
+        if (OutputInterface::VERBOSITY_DEBUG <= $this->output->getVerbosity()) {
+            $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
+        }
         $data = json_encode($data);
         $response = $this->processRequest($data);
         $this->_handleError($data, $response);
@@ -121,7 +123,9 @@ class Timesheet extends BaseService
                 $taskCode
             ]
         ];
-        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
+        if (OutputInterface::VERBOSITY_DEBUG <= $this->output->getVerbosity()) {
+            $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
+        }
         $data = json_encode($data);
 
         $response = $this->processRequest($data);
