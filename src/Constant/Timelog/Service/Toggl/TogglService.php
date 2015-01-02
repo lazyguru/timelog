@@ -59,7 +59,9 @@ class TogglService extends BaseService
             ]
         ];
 
-        $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
+        if (OutputInterface::VERBOSITY_DEBUG <= $this->output->getVerbosity()) {
+            $this->output->writeln('<debug>' . print_r($data, true) . '</debug>');
+        }
         $data = json_encode($data);
 
         $response = $this->processRequest($data, self::PUT);
