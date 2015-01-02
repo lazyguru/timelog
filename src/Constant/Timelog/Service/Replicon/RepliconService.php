@@ -31,19 +31,19 @@ class RepliconService extends BaseService
         }
         $date = explode('-', $date);
         $data = [
-            'Action'     => 'Query',
-            'QueryType'  => 'EntryTimesheetByUserDate',
+            'Action' => 'Query',
+            'QueryType' => 'EntryTimesheetByUserDate',
             'DomainType' => 'Replicon.Suite.Domain.EntryTimesheet',
-            'Args'       => [
+            'Args' => [
                 [
-                    '__type'   => 'Replicon.Domain.User',
+                    '__type' => 'Replicon.Domain.User',
                     'Identity' => (string)$userid
                 ],
                 [
                     "__type" => "Date",
-                    "Year"   => $date[0],
-                    "Month"  => $date[1],
-                    "Day"    => $date[2]
+                    "Year" => $date[0],
+                    "Month" => $date[1],
+                    "Day" => $date[2]
                 ]
             ]
         ];
@@ -60,10 +60,10 @@ class RepliconService extends BaseService
     public function getTaskByCode($code)
     {
         $data = array(
-            'Action'     => 'Query',
-            'QueryType'  => 'TaskByCode',
+            'Action' => 'Query',
+            'QueryType' => 'TaskByCode',
             'DomainType' => 'Replicon.Project.Domain.Task',
-            'Args'       => array(
+            'Args' => array(
                 $code
             )
         );
@@ -80,10 +80,10 @@ class RepliconService extends BaseService
     public function findUseridByLogin($username)
     {
         $data = array(
-            'Action'     => 'Query',
-            'QueryType'  => 'UserByLoginName',
+            'Action' => 'Query',
+            'QueryType' => 'UserByLoginName',
             'DomainType' => 'Replicon.Domain.User',
-            'Args'       => array(
+            'Args' => array(
                 $username
             )
         );
@@ -101,35 +101,35 @@ class RepliconService extends BaseService
     {
         $date = explode('-', $date);
         $data = [
-            "Action"     => "Edit",
-            "Type"       => "Replicon.Suite.Domain.EntryTimesheet",
-            "Identity"   => (string)$timesheet,
+            "Action" => "Edit",
+            "Type" => "Replicon.Suite.Domain.EntryTimesheet",
+            "Identity" => (string)$timesheet,
             "Operations" => [
                 [
                     "__operation" => "CollectionAdd",
-                    "Collection"  => "TimeEntries",
-                    "Operations"  => [
+                    "Collection" => "TimeEntries",
+                    "Operations" => [
                         [
-                            "__operation"           => "SetProperties",
+                            "__operation" => "SetProperties",
                             "CalculationModeObject" => [
-                                "Type"       => "Replicon.TimeSheet.Domain.CalculationModeObject",
-                                "Identity"   => "CalculateInOutTime",
+                                "Type" => "Replicon.TimeSheet.Domain.CalculationModeObject",
+                                "Identity" => "CalculateInOutTime",
                                 "Properties" => [
                                     "Name" => "CalculationModeObject_CalculateInOutTime"
                                 ]
                             ],
-                            "EntryDate"             => [
+                            "EntryDate" => [
                                 "__type" => "Date",
-                                "Year"   => $date[0],
-                                "Month"  => $date[1],
-                                "Day"    => $date[2]
+                                "Year" => $date[0],
+                                "Month" => $date[1],
+                                "Day" => $date[2]
                             ],
-                            "Duration"              => [
+                            "Duration" => [
                                 "__type" => "Timespan",
-                                "Hours"  => $duration
+                                "Hours" => $duration
                             ],
-                            "Comments"              => $comment,
-                            "Task"                  => [
+                            "Comments" => $comment,
+                            "Task" => [
                                 "Identity" => (string)$code
                             ]
                         ]

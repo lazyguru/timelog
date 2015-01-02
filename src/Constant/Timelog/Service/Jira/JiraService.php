@@ -37,10 +37,10 @@ class JiraService extends BaseService
     /**
      * Create worklog entry in Jira
      *
-     * @param array  $site
+     * @param array $site
      * @param string $date
      * @param string $ticket
-     * @param mixed  $timeSpent
+     * @param mixed $timeSpent
      * @param string $comment
      * @throws Exception
      * @return mixed
@@ -56,8 +56,8 @@ class JiraService extends BaseService
         $startedDate = $this->_formatTimestamp($date);
         $data = [
             'timeSpent' => $timeSpent,
-            'started'   => $startedDate,
-            'comment'   => $comment
+            'started' => $startedDate,
+            'comment' => $comment
         ];
 
         if (OutputInterface::VERBOSITY_DEBUG <= $this->output->getVerbosity()) {

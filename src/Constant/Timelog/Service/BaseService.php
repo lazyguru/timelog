@@ -3,18 +3,19 @@
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Subscriber\Log\LogSubscriber;
-use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class BaseService {
+abstract class BaseService
+{
 
     const POST = 'post';
-    const GET  = 'get';
-    const PUT  = 'put';
+    const GET = 'get';
+    const PUT = 'put';
 
     protected $_headers = [];
-    protected $uri      = '';
+    protected $uri = '';
     protected $username = '';
     protected $password = '';
 
@@ -60,9 +61,9 @@ abstract class BaseService {
             $client->getEmitter()->attach($subscriber);
 
             $response = $client->$method($this->uri, [
-                'auth'    => [$this->username, $this->password],
+                'auth' => [$this->username, $this->password],
                 'headers' => $this->_headers,
-                'body'    => $data
+                'body' => $data
             ]);
 
             return json_decode($response->getBody());

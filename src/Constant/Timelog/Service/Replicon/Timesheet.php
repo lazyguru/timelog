@@ -52,16 +52,16 @@ class Timesheet extends BaseService
         $this->_headers['X-Replicon-Security-Context'] = 'User';
         $this->_timeRows[] = [
             "__operation" => "CollectionClear",
-            "Collection"  => "TimeRows"
+            "Collection" => "TimeRows"
         ];
     }
 
     public function saveTimesheet()
     {
         $data = [
-            "Action"     => "Edit",
-            "Type"       => "Replicon.TimeSheet.Domain.Timesheet",
-            "Identity"   => (string)$this->getId(),
+            "Action" => "Edit",
+            "Type" => "Replicon.TimeSheet.Domain.Timesheet",
+            "Identity" => (string)$this->getId(),
             "Operations" => $this->_timeRows
         ];
         if (OutputInterface::VERBOSITY_DEBUG <= $this->output->getVerbosity()) {
@@ -77,28 +77,28 @@ class Timesheet extends BaseService
         $date = explode('-', $date);
         return [
             "__operation" => "CollectionAdd",
-            "Collection"  => "Cells",
-            "Operations"  => [
+            "Collection" => "Cells",
+            "Operations" => [
                 [
-                    "__operation"           => "SetProperties",
+                    "__operation" => "SetProperties",
                     "CalculationModeObject" => [
-                        "__type"   => "Replicon.TimeSheet.Domain.CalculationModeObject",
+                        "__type" => "Replicon.TimeSheet.Domain.CalculationModeObject",
                         "Identity" => "CalculateInOutTime"
                     ]
                 ],
                 [
                     "__operation" => "SetProperties",
-                    "EntryDate"   => [
+                    "EntryDate" => [
                         "__type" => "Date",
-                        "Year"   => $date[0],
-                        "Month"  => $date[1],
-                        "Day"    => $date[2]
+                        "Year" => $date[0],
+                        "Month" => $date[1],
+                        "Day" => $date[2]
                     ],
-                    "Duration"    => [
+                    "Duration" => [
                         "__type" => "Timespan",
-                        "Hours"  => $duration
+                        "Hours" => $duration
                     ],
-                    "Comments"    => $comment
+                    "Comments" => $comment
                 ]
             ]
         ];
@@ -108,18 +108,18 @@ class Timesheet extends BaseService
     {
         $this->_timeRows[] = [
             "__operation" => "CollectionAdd",
-            "Collection"  => "TimeRows",
-            "Operations"  => $cells
+            "Collection" => "TimeRows",
+            "Operations" => $cells
         ];
     }
 
     public function createTask($taskCode)
     {
         $data = [
-            'Action'     => 'Query',
-            'QueryType'  => 'TaskByCode',
+            'Action' => 'Query',
+            'QueryType' => 'TaskByCode',
             'DomainType' => 'Replicon.Project.Domain.Task',
-            'Args'       => [
+            'Args' => [
                 $taskCode
             ]
         ];
@@ -134,11 +134,11 @@ class Timesheet extends BaseService
 
         return [
             "__operation" => "SetProperties",
-            "Task"        => [
-                "__type"   => "Replicon.Project.Domain.Task",
+            "Task" => [
+                "__type" => "Replicon.Project.Domain.Task",
                 "Identity" => (string)$task->Id
             ]
-          ];
+        ];
     }
 
     public function createActivity($type = ACTIVITY_NONE)
@@ -149,8 +149,8 @@ class Timesheet extends BaseService
 
         return [
             "__operation" => "SetProperties",
-            "Activity"    => [
-                "__type"   => "Replicon.Domain.Activity",
+            "Activity" => [
+                "__type" => "Replicon.Domain.Activity",
                 "Identity" => (string)$type
             ]
         ];

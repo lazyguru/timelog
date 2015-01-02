@@ -82,8 +82,8 @@ class TimelogCommand extends Command
         $output->writeln('<info>Created Jira Worklogs...</info>');
         $loggedTable = new Table($output);
         $loggedTable->setHeaders(['Client', 'Ticket', 'Date', 'Duration'])
-              ->setRows($this->loggedTimes)
-              ->render();
+            ->setRows($this->loggedTimes)
+            ->render();
         $output->writeln('<info>Jira Worklogs Not Created...</info>');
         $notLoggedTable = new Table($output);
         $notLoggedTable->setHeaders(['Client', 'Ticket', 'Date', 'Duration'])
@@ -122,9 +122,9 @@ class TimelogCommand extends Command
         $ticket = $entry->getTicket();
         if (!isset($clients[$client])) {
             $this->notLoggedTimes[] = [
-                'client'   => $client,
-                'ticket'   => $ticket,
-                'date'     => $date,
+                'client' => $client,
+                'ticket' => $ticket,
+                'date' => $date,
                 'duration' => "{$time}h",
             ];
             return $entry;
@@ -136,9 +136,9 @@ class TimelogCommand extends Command
             $entry = $entry->save();
         }
         $this->loggedTimes[] = [
-            'client'   => $client,
-            'ticket'   => $ticket,
-            'date'     => $date,
+            'client' => $client,
+            'ticket' => $ticket,
+            'date' => $date,
             'duration' => "{$time}h",
         ];
         return $entry;

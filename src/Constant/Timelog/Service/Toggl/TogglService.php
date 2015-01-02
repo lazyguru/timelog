@@ -13,14 +13,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 class TogglService extends BaseService
 {
     /**
-     * @var int
-     */
-    protected $workspace_id;
-
-    /**
      * @var string
      */
     public $user_agent = 'TogglToJira';
+    /**
+     * @var int
+     */
+    protected $workspace_id;
 
     /**
      * Initialize class
@@ -29,7 +28,7 @@ class TogglService extends BaseService
      * @param $api_token
      * @param array $options
      */
-    public function __construct(OutputInterface $output, $workspace, $api_token, $options =[])
+    public function __construct(OutputInterface $output, $workspace, $api_token, $options = [])
     {
         $this->output = $output;
         $this->username = $api_token;
@@ -48,14 +47,14 @@ class TogglService extends BaseService
         $this->uri = 'https://www.toggl.com/api/v8/time_entries/' . $entry->getId();
         $data = [
             'time_entry' => [
-                'description'  => $entry->getDescription(),
-                'start'        => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $startTime), 0, 22) . ':00',
-                'stop'         => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $endTime), 0, 22) . ':00',
-                'billable'     => $entry->isBillable(),
-                'wid'          => $this->workspace_id,
-                'duration'     => $entry->getDurationTime(),
-                'tags'         => $entry->getTags(),
-                'id'           => $entry->getId(),
+                'description' => $entry->getDescription(),
+                'start' => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $startTime), 0, 22) . ':00',
+                'stop' => substr(strftime('%Y-%m-%dT%H:%M:%S%z', $endTime), 0, 22) . ':00',
+                'billable' => $entry->isBillable(),
+                'wid' => $this->workspace_id,
+                'duration' => $entry->getDurationTime(),
+                'tags' => $entry->getTags(),
+                'id' => $entry->getId(),
                 'created_with' => $this->user_agent
             ]
         ];
