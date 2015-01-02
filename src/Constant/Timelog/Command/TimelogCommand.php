@@ -238,21 +238,30 @@ class TimelogCommand extends Command
         $loggedTimes = [];
         $toBeLogged = [];
         foreach ($entries as $entry) {
-            if (!isset($toBeLogged[$entry->getTask()])) {
-                $toBeLogged[$entry->getTask()] = [];
+            $taskid = $entry->getTask();
+            $timeoff = 0;
+            if (empty($taskid)) {
+                $taskid = $entry->getTags()[0];
+                $timeoff = 1;
             }
-            if (!isset($toBeLogged[$entry->getTask()][$entry->getEntryDate()])) {
-                $toBeLogged[$entry->getTask()][$entry->getEntryDate()] = [
+            if (!isset($toBeLogged[$taskid])) {
+                $toBeLogged[$taskid] = [];
+            }
+            if (!isset($toBeLogged[$taskid][$entry->getEntryDate()])) {
+                $toBeLogged[$taskid][$entry->getEntryDate()] = [
                     'time' => 0,
                     'ticket' => []
                 ];
             }
-            $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['time'] += $entry->getDuration();
+            $toBeLogged[$taskid][$entry->getEntryDate()]['time'] += $entry->getDuration();
             $ticket = $entry->getTicket();
             if (empty($ticket)) {
                 $ticket = $entry->getDescription();
             }
-            $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['ticket'][] = $ticket;
+            $toBeLogged[$taskid][$entry->getEntryDate()]['ticket'][] = $ticket;
+            $toBeLogged[$taskid][$entry->getEntryDate()]['tags'][] = $entry->getTags();
+            $toBeLogged[$taskid][$entry->getEntryDate()]['timeoff'] = $timeoff;
+
             $loggedTimes[] = [
                 'Client' => $entry->getClient(),
                 'Description' => $entry->getDescription(),
@@ -262,7 +271,7 @@ class TimelogCommand extends Command
         }
         $t->setId($timesheet);
         foreach ($toBeLogged as $taskid => $entries) {
-            $task = $t->createTask($taskid);
+            $task = $this->_getTask($t, $taskid, $entries);
             $cells = [];
             $cells[] = $task;
             foreach ($entries as $date => $entry) {
@@ -278,5 +287,28 @@ class TimelogCommand extends Command
         $loggedTable->setHeaders(['Client', 'Description', 'Date', 'Duration'])
             ->setRows($loggedTimes)
             ->render();
+    }
+
+    private function _getTask(Timesheet $t, $taskid, $entries)
+    {
+        $entry = array_shift($entries);
+        if ($entry['timeoff'] == 1) {
+            return $this->_createActivity($t, $taskid);
+        }
+        return $t->createTask($taskid);
+    }
+
+    private function _createActivity(Timesheet $t, $type)
+    {
+        switch($type){
+            case 'Vacation':
+                return $t->createActivity(Timesheet::ACTIVITY_VACATION);
+            case 'Sick':
+                return $t->createActivity(Timesheet::ACTIVITY_SICK);
+            case 'Holiday':
+                return $t->createActivity(Timesheet::ACTIVITY_HOLIDAY);
+            default:
+                throw new \Exception('Invalid time-off type: ' . $type);
+        }
     }
 }
