@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 class TimelogCommand extends Command
 {
@@ -24,7 +25,16 @@ class TimelogCommand extends Command
      * @var array
      */
     protected $notLoggedTimes = [];
+
+    /**
+     * @var array
+     */
     protected $_jiraInstances;
+
+    /**
+     * @var ProgressBar
+     */
+    private $progress;
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -53,11 +63,18 @@ class TimelogCommand extends Command
 
         $entries = $toggl->getTimeEntries($rundate, $enddate);
 
+        if (OutputInterface::VERBOSITY_NORMAL >= $output->getVerbosity()) {
+            // create a new progress bar
+            $this->progress = new ProgressBar($output, count($entries));
+        }
+
         if ($jira) {
+            $this->startProgress();
             $this->_processJira($entries, $output);
         }
 
         if ($replicon) {
+            $this->startProgress();
             $this->processReplicon($rundate, $entries, $output);
         }
     }
@@ -76,9 +93,11 @@ class TimelogCommand extends Command
         $this->_initiailzeJiraInstances($output, $jiraConfig);
         foreach ($entries as $entry) {
             $entry = $this->_processJiraTimeEntry($clients, $entry);
+            $this->advanceProgress();
         }
         asort($this->loggedTimes);
         asort($this->notLoggedTimes);
+        $this->clearProgress();
         $output->writeln('<info>Created Jira Worklogs...</info>');
         $loggedTable = new Table($output);
         $loggedTable->setHeaders(['Client', 'Ticket', 'Date', 'Duration'])
@@ -279,9 +298,11 @@ class TimelogCommand extends Command
                 $cells[] = $cell;
             }
             $t->addTimeRow($cells);
+            $this->advanceProgress();
         }
         $t->saveTimesheet();
         asort($loggedTimes);
+        $this->clearProgress();
         $output->writeln('<info>Created Replicon Entries...</info>');
         $loggedTable = new Table($output);
         $loggedTable->setHeaders(['Client', 'Description', 'Date', 'Duration'])
@@ -309,6 +330,31 @@ class TimelogCommand extends Command
                 return $t->createActivity(Timesheet::ACTIVITY_HOLIDAY);
             default:
                 throw new \Exception('Invalid time-off type: ' . $type);
+        }
+    }
+
+    private function startProgress()
+    {
+        if ($this->progress) {
+            $this->progress->start();
+        }
+    }
+    private function finishProgress()
+    {
+        if ($this->progress) {
+            $this->progress->finish();
+        }
+    }
+    private function advanceProgress()
+    {
+        if ($this->progress) {
+            $this->progress->advance();
+        }
+    }
+    private function clearProgress()
+    {
+        if ($this->progress) {
+            $this->progress->clear();
         }
     }
 }
