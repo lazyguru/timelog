@@ -6,6 +6,7 @@ use Constant\Timelog\Service\Replicon\Timesheet;
 use Constant\Timelog\Service\Toggl\TimeEntry;
 use Constant\Timelog\Service\Toggl\TogglService;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -78,15 +79,16 @@ class TimelogCommand extends Command
         }
         asort($this->loggedTimes);
         asort($this->notLoggedTimes);
-        $output->writeln('<info>******** Created Jira Worklogs **********</info>');
-        foreach($this->loggedTimes as $time) {
-            $output->writeln("<info>{$time}</info>");
-        }
-        $output->writeln('<info>******* Jira Worklogs Not Created ********</info>');
-        foreach($this->notLoggedTimes as $time) {
-            $output->writeln("<comment>{$time}</comment>");
-        }
-        $output->writeln('<info>"*****************************************"</info>');
+        $output->writeln('<info>Created Jira Worklogs...</info>');
+        $loggedTable = new Table($output);
+        $loggedTable->setHeaders(['Client', 'Ticket', 'Date', 'Duration'])
+              ->setRows($this->loggedTimes)
+              ->render();
+        $output->writeln('<info>Jira Worklogs Not Created...</info>');
+        $notLoggedTable = new Table($output);
+        $notLoggedTable->setHeaders(['Client', 'Ticket', 'Date', 'Duration'])
+            ->setRows($this->notLoggedTimes)
+            ->render();
     }
 
     /**
@@ -119,7 +121,12 @@ class TimelogCommand extends Command
         $client = $entry->getClient();
         $ticket = $entry->getTicket();
         if (!isset($clients[$client])) {
-            $this->notLoggedTimes[] = "{$client} task {$ticket} was NOT logged on {$date} for {$time}h";
+            $this->notLoggedTimes[] = [
+                'client'   => $client,
+                'ticket'   => $ticket,
+                'date'     => $date,
+                'duration' => "{$time}h",
+            ];
             return $entry;
         }
         if (!$entry->isLogged()) {
@@ -128,7 +135,12 @@ class TimelogCommand extends Command
             $entry->addTag('Jira'); // Mark as logged so we don't log it again in the future
             $entry = $entry->save();
         }
-        $this->loggedTimes[] = "{$client} ticket {$ticket} was logged on {$date} for {$time}h";
+        $this->loggedTimes[] = [
+            'client'   => $client,
+            'ticket'   => $ticket,
+            'date'     => $date,
+            'duration' => "{$time}h",
+        ];
         return $entry;
     }
 
@@ -241,7 +253,12 @@ class TimelogCommand extends Command
                 $ticket = $entry->getDescription();
             }
             $toBeLogged[$entry->getTask()][$entry->getEntryDate()]['ticket'][] = $ticket;
-            $loggedTimes[] = "{$entry->getClient()} entry {$entry->getDescription()} was logged on {$entry->getEntryDate()} for {$entry->getDuration()}h";
+            $loggedTimes[] = [
+                'Client' => $entry->getClient(),
+                'Description' => $entry->getDescription(),
+                'Date' => $entry->getEntryDate(),
+                'Duration' => $entry->getDuration() . 'h'
+            ];
         }
         $t->setId($timesheet);
         foreach ($toBeLogged as $taskid => $entries) {
@@ -256,10 +273,10 @@ class TimelogCommand extends Command
         }
         $t->saveTimesheet();
         asort($loggedTimes);
-        $output->writeln('<info>******** Created Replicon Entries **********</info>');
-        foreach($loggedTimes as $time) {
-            $output->writeln("<info>{$time}</info>");
-        }
-        $output->writeln('<info>*****************************************</info>');
+        $output->writeln('<info>Created Replicon Entries...</info>');
+        $loggedTable = new Table($output);
+        $loggedTable->setHeaders(['Client', 'Description', 'Date', 'Duration'])
+            ->setRows($loggedTimes)
+            ->render();
     }
 }
