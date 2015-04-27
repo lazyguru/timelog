@@ -69,6 +69,9 @@ class Timesheet extends BaseService
         }
         $data = json_encode($data);
         $response = $this->processRequest($data);
+        if ('Exception' == $response->Status) {
+            $this->output->writeln('<error>' . $response->Message . '</error>');
+        }
         $this->_handleError($data, $response);
     }
 
