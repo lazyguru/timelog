@@ -92,8 +92,9 @@ class TogglService extends BaseService
 
         $response = $this->processRequest($data, self::GET);
         $this->_handleError($data, $response);
+        $toggl_entries = $this->processTogglResponse($response);
         $timeEntries = [];
-        foreach ($response->data as $entry) {
+        foreach ($toggl_entries as $entry) {
             $te = new TimeEntry(
                 $this,
                 $entry->id,
@@ -110,5 +111,34 @@ class TogglService extends BaseService
             $timeEntries[] = $te;
         }
         return $timeEntries;
+    }
+
+    protected function processTogglResponse($response)
+    {
+        // We only need to do something if results are paginated
+        if ($response->total_count <= 50) {
+            return $response->data;
+        }
+
+        $reqdata = [];
+        $reqdata = json_encode($reqdata);
+        $pages = ceil($response->total_count / 50);
+        $curr_page = 1;
+        $data = $response->data;
+
+        $orig_uri = $this->uri;
+
+        while ($curr_page < $pages) {
+            $curr_page++;
+            $this->uri .= '&page=' . $curr_page;
+            $response = $this->processRequest($reqdata, self::GET);
+            $this->_handleError($reqdata, $response);
+            foreach ($response->data as $entry) {
+                $data[] = $entry;
+            }
+            $this->uri = $orig_uri;
+        }
+
+        return $data;
     }
 }
