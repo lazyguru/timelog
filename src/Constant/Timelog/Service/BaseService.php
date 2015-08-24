@@ -55,7 +55,7 @@ abstract class BaseService
 
             // create a log channel
             $log = new Logger(get_class($this));
-            $log->pushHandler(new StreamHandler(get_class($this) . '.log', Logger::DEBUG));
+            $log->pushHandler(new StreamHandler('timelog.log', Logger::DEBUG));
 
             $subscriber = new LogSubscriber($log);
             $client->getEmitter()->attach($subscriber);
