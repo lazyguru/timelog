@@ -232,6 +232,9 @@ class TimelogCommand extends Command
      */
     protected function processReplicon($rundate, $entries, OutputInterface $output)
     {
+        // Temporary until Gen3 access is enabled.  Then will refactor code to support both Gen2 and Gen3
+        return $this->printReplicon($rundate, $entries, $output);
+
         $replicon_config = Yaml::parse('replicon.yaml');
         $r = new RepliconService(
             $output,
@@ -307,6 +310,72 @@ class TimelogCommand extends Command
         $loggedTable = new Table($output);
         $loggedTable->setHeaders(['Client', 'Description', 'Date', 'Duration'])
             ->setRows($loggedTimes)
+            ->render();
+    }
+
+    /**
+     * @param $rundate
+     * @param $entries
+     * @param OutputInterface $output
+     */
+    protected function printReplicon($rundate, $entries, OutputInterface $output)
+    {
+        $taskCache = [];
+        $loggedTimes = [];
+        $toBeLogged = [];
+        foreach ($entries as $entry) {
+            $taskid = $entry->getTask();
+            $timeoff = 0;
+            if (empty($taskid)) {
+                $taskid = $entry->getTags()[0];
+                $timeoff = 1;
+            }
+            if (!isset($toBeLogged[$taskid])) {
+                $toBeLogged[$taskid] = [];
+            }
+            if (!isset($toBeLogged[$taskid][$entry->getEntryDate()])) {
+                $toBeLogged[$taskid][$entry->getEntryDate()] = [
+                    'client' => $entry->getClient(),
+                    'ticket' => [],
+                    'tags' => [],
+                    'time' => 0,
+                    'ticket' => [],
+                    'timeoff' => $timeoff,
+                ];
+            }
+            $toBeLogged[$taskid][$entry->getEntryDate()]['time'] += $entry->getDuration();
+            $ticket = $entry->getTicket();
+            if (empty($ticket)) {
+                $ticket = $entry->getDescription();
+            }
+            $toBeLogged[$taskid][$entry->getEntryDate()]['ticket'][] = $ticket;
+            $toBeLogged[$taskid][$entry->getEntryDate()]['tags'][] = $entry->getTags();
+
+            $loggedTimes[] = [
+                'Client' => $entry->getClient(),
+                'Description' => $entry->getDescription(),
+                'Date' => $entry->getEntryDate(),
+                'Duration' => $entry->getDuration() . 'h'
+            ];
+        }
+        $report = [];
+        foreach ($toBeLogged as $taskid => $task) {
+            foreach ($task as $date => $entry) {
+                $report[] = [
+                    'Client' => $entry['client'],
+                    'Taskid' => $taskid,
+                    'Date' => $date,
+                    'Description' => implode(',', $entry['ticket']),
+                    'Duration' => $entry['time']
+                ];
+            }
+        }
+        // $cell = $t->createCell($date, $entry['time'], implode(',', $entry['ticket']));
+        asort($report);
+        $output->writeln('<info>Created Replicon Entries...</info>');
+        $loggedTable = new Table($output);
+        $loggedTable->setHeaders(['Client', 'Task', 'Date', 'Description', 'Duration'])
+            ->setRows($report)
             ->render();
     }
 
