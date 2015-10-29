@@ -1,8 +1,8 @@
 <?php namespace Constant\Timelog\Command;
 
 use Constant\Timelog\Service\Jira\JiraService;
-use Constant\Timelog\Service\Replicon\RepliconService;
-use Constant\Timelog\Service\Replicon\Timesheet;
+use Constant\Replicon\Gen2\RepliconService;
+use Constant\Replicon\Gen2\Timesheet;
 use Constant\Timelog\Service\Toggl\TimeEntry;
 use Constant\Timelog\Service\Toggl\TogglService;
 use Symfony\Component\Console\Command\Command;

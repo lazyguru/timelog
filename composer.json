@@ -1,6 +1,6 @@
 {
-    "name": "lazyguru/toggljira",
-    "description": "Toggl to Jira integration",
+    "name": "lazyguru/timelog",
+    "description": "Toggl to Jira/Replicon integration",
     "license": "MIT",
     "authors": [
         {
@@ -14,7 +14,8 @@
         "guzzlehttp/log-subscriber": "~1.0",
         "symfony/console": "~2.5",
         "symfony/debug": "~2.5",
-        "symfony/config": "~2.5"
+        "symfony/config": "~2.5",
+        "lazyguru/replicon-gen2": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"
