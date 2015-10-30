@@ -15,7 +15,9 @@
         "symfony/console": "~2.5",
         "symfony/debug": "~2.5",
         "symfony/config": "~2.5",
-        "lazyguru/replicon-gen2": "*"
+        "lazyguru/replicon-gen2": "*",
+        "lazyguru/toggl": "*",
+        "lazyguru/jira": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"

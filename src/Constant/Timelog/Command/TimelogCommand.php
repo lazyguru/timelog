@@ -1,10 +1,10 @@
 <?php namespace Constant\Timelog\Command;
 
-use Constant\Timelog\Service\Jira\JiraService;
+use Constant\Jira\JiraService;
 use Constant\Replicon\Gen2\RepliconService;
 use Constant\Replicon\Gen2\Timesheet;
-use Constant\Timelog\Service\Toggl\TimeEntry;
-use Constant\Timelog\Service\Toggl\TogglService;
+use Constant\Toggl\TimeEntry;
+use Constant\Toggl\TogglService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;

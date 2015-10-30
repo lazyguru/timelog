@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "edd8dfd18a5abff042675373a929ac5c",
-    "content-hash": "6abeb546e5eeb533ba0854a988222b44",
+    "hash": "4da696a6d06840d8b6c7fa1b0fb47471",
+    "content-hash": "68ec3fdd8c308288674e342316b4b458",
     "packages": [
         {
             "name": "guzzlehttp/command",
@@ -352,6 +352,47 @@
             "time": "2015-10-29 05:12:02"
         },
         {
+            "name": "lazyguru/jira",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lazyguru/jira.git",
+                "reference": "f662d37563759034662efab947e9a5d89e807bc6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lazyguru/jira/zipball/f662d37563759034662efab947e9a5d89e807bc6",
+                "reference": "f662d37563759034662efab947e9a5d89e807bc6",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle-services": "~0.2",
+                "guzzlehttp/log-subscriber": "~1.0",
+                "lazyguru/base-api": "*",
+                "monolog/monolog": "1.6.0",
+                "php": ">=5.4.0",
+                "psr/log": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Constant\\Jira\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joe Constant",
+                    "email": "joe@joeconstant.com"
+                }
+            ],
+            "description": "Integrate with Jira REST API",
+            "time": "2015-10-30 06:08:17"
+        },
+        {
             "name": "lazyguru/replicon-gen2",
             "version": "0.0.1",
             "source": {
@@ -391,6 +432,47 @@
             ],
             "description": "Integrate with Replicon's Gen2 API",
             "time": "2015-10-29 05:19:26"
+        },
+        {
+            "name": "lazyguru/toggl",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lazyguru/toggl.git",
+                "reference": "cce4aa877f9ed916567e35e10393be71325463d6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lazyguru/toggl/zipball/cce4aa877f9ed916567e35e10393be71325463d6",
+                "reference": "cce4aa877f9ed916567e35e10393be71325463d6",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle-services": "~0.2",
+                "guzzlehttp/log-subscriber": "~1.0",
+                "lazyguru/base-api": "*",
+                "monolog/monolog": "1.6.0",
+                "php": ">=5.4.0",
+                "psr/log": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Constant\\Toggl\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joe Constant",
+                    "email": "joe@joeconstant.com"
+                }
+            ],
+            "description": "Integrate with Toggl's API",
+            "time": "2015-10-30 06:07:59"
         },
         {
             "name": "monolog/monolog",
