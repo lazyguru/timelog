@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "4da696a6d06840d8b6c7fa1b0fb47471",
+    "hash": "45ddfde2a29c23d5470ab3f3508c4d94",
     "content-hash": "68ec3fdd8c308288674e342316b4b458",
     "packages": [
         {
@@ -313,16 +313,16 @@
         },
         {
             "name": "lazyguru/base-api",
-            "version": "0.0.1",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/base-api.git",
-                "reference": "f264247bb94a1e11d9f0a0d85ab4a902ced0556a"
+                "reference": "e2cd07900eaecf74e61960d1b426136d976d5b46"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/base-api/zipball/f264247bb94a1e11d9f0a0d85ab4a902ced0556a",
-                "reference": "f264247bb94a1e11d9f0a0d85ab4a902ced0556a",
+                "url": "https://api.github.com/repos/lazyguru/base-api/zipball/e2cd07900eaecf74e61960d1b426136d976d5b46",
+                "reference": "e2cd07900eaecf74e61960d1b426136d976d5b46",
                 "shasum": ""
             },
             "require": {
@@ -349,20 +349,20 @@
                 }
             ],
             "description": "Base API class setup",
-            "time": "2015-10-29 05:12:02"
+            "time": "2015-10-31 02:45:07"
         },
         {
             "name": "lazyguru/jira",
-            "version": "0.0.2",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/jira.git",
-                "reference": "f662d37563759034662efab947e9a5d89e807bc6"
+                "reference": "e27a2e9676c70b840a0db0c9a2bea10ed80de0c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/jira/zipball/f662d37563759034662efab947e9a5d89e807bc6",
-                "reference": "f662d37563759034662efab947e9a5d89e807bc6",
+                "url": "https://api.github.com/repos/lazyguru/jira/zipball/e27a2e9676c70b840a0db0c9a2bea10ed80de0c2",
+                "reference": "e27a2e9676c70b840a0db0c9a2bea10ed80de0c2",
                 "shasum": ""
             },
             "require": {
@@ -390,20 +390,20 @@
                 }
             ],
             "description": "Integrate with Jira REST API",
-            "time": "2015-10-30 06:08:17"
+            "time": "2015-10-31 02:15:02"
         },
         {
             "name": "lazyguru/replicon-gen2",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/replicon-gen2.git",
-                "reference": "44770c0d984091722a7cda35edab21a2ea01a62f"
+                "reference": "2cf32dab21687c6058f8a86e631f5b6b686248cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/replicon-gen2/zipball/44770c0d984091722a7cda35edab21a2ea01a62f",
-                "reference": "44770c0d984091722a7cda35edab21a2ea01a62f",
+                "url": "https://api.github.com/repos/lazyguru/replicon-gen2/zipball/2cf32dab21687c6058f8a86e631f5b6b686248cd",
+                "reference": "2cf32dab21687c6058f8a86e631f5b6b686248cd",
                 "shasum": ""
             },
             "require": {
@@ -431,20 +431,20 @@
                 }
             ],
             "description": "Integrate with Replicon's Gen2 API",
-            "time": "2015-10-29 05:19:26"
+            "time": "2015-10-31 02:16:18"
         },
         {
             "name": "lazyguru/toggl",
-            "version": "0.0.2",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/toggl.git",
-                "reference": "cce4aa877f9ed916567e35e10393be71325463d6"
+                "reference": "50d49f732935513bb5d8f307a1c77b52b15c91a3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/toggl/zipball/cce4aa877f9ed916567e35e10393be71325463d6",
-                "reference": "cce4aa877f9ed916567e35e10393be71325463d6",
+                "url": "https://api.github.com/repos/lazyguru/toggl/zipball/50d49f732935513bb5d8f307a1c77b52b15c91a3",
+                "reference": "50d49f732935513bb5d8f307a1c77b52b15c91a3",
                 "shasum": ""
             },
             "require": {
@@ -472,7 +472,7 @@
                 }
             ],
             "description": "Integrate with Toggl's API",
-            "time": "2015-10-30 06:07:59"
+            "time": "2015-10-31 02:12:20"
         },
         {
             "name": "monolog/monolog",

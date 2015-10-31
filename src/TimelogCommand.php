@@ -5,11 +5,13 @@ use Constant\Replicon\Gen2\RepliconService;
 use Constant\Replicon\Gen2\Timesheet;
 use Constant\Toggl\TimeEntry;
 use Constant\Toggl\TogglService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -38,6 +40,7 @@ class TimelogCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $logger = new ConsoleLogger($output);
         $rundate = $input->getArgument('start_date');
         $enddate = $input->getArgument('end_date');
         if (!isset($enddate)) {
@@ -58,7 +61,7 @@ class TimelogCommand extends Command
 
         // Toggl values
         $toggl_config = Yaml::parse('toggl.yaml');
-        $toggl = new TogglService($output, $toggl_config['workspace_id'], $toggl_config['api_token']);
+        $toggl = new TogglService($logger, $toggl_config['workspace_id'], $toggl_config['api_token']);
         $toggl->user_agent = $toggl_config['user_agent'];
 
         $entries = $toggl->getTimeEntries($rundate, $enddate);
@@ -70,27 +73,28 @@ class TimelogCommand extends Command
 
         if ($jira) {
             $this->startProgress();
-            $this->_processJira($entries, $output);
+            $this->_processJira($entries, $output, $logger);
         }
 
         if ($replicon) {
             $this->startProgress();
-            $this->processReplicon($rundate, $entries, $output);
+            $this->processReplicon($rundate, $entries, $output, $logger);
         }
     }
 
     /**
      * @param array $entries
      * @param OutputInterface $output
+     * @param LoggerInterface $logger
      */
-    protected function _processJira($entries, OutputInterface $output)
+    protected function _processJira($entries, OutputInterface $output, LoggerInterface $logger)
     {
         // Jira values
         $jiraConfig = Yaml::parse('jira.yaml');
 
         $clients = $jiraConfig['Clients'];
 
-        $this->_initiailzeJiraInstances($output, $jiraConfig);
+        $this->_initiailzeJiraInstances($logger, $jiraConfig);
         foreach ($entries as $entry) {
             $entry = $this->_processJiraTimeEntry($clients, $entry);
             $this->advanceProgress();
@@ -116,12 +120,12 @@ class TimelogCommand extends Command
      *
      * @return array
      */
-    protected function _initiailzeJiraInstances(OutputInterface $output, $jiraConfig)
+    protected function _initiailzeJiraInstances(LoggerInterface $logger, $jiraConfig)
     {
         $this->_jiraInstances = [];
 
         foreach ($jiraConfig['Sites'] as $key => $site) {
-            $this->_jiraInstances[$key] = new JiraService($output, $site['user'], $site['pass'], ['site' => $site['url']]);
+            $this->_jiraInstances[$key] = new JiraService($logger, $site['user'], $site['pass'], ['site' => $site['url']]);
         }
 
         return $this->_jiraInstances;
@@ -229,15 +233,16 @@ class TimelogCommand extends Command
      * @param $rundate
      * @param $entries
      * @param OutputInterface $output
+     * @param LoggerInterface $logger
      */
-    protected function processReplicon($rundate, $entries, OutputInterface $output)
+    protected function processReplicon($rundate, $entries, OutputInterface $output, LoggerInterface $logger)
     {
         // Temporary until Gen3 access is enabled.  Then will refactor code to support both Gen2 and Gen3
         return $this->printReplicon($rundate, $entries, $output);
 
         $replicon_config = Yaml::parse('replicon.yaml');
         $r = new RepliconService(
-            $output,
+            $logger,
             $replicon_config['username'],
             $replicon_config['password'],
             [
@@ -245,7 +250,7 @@ class TimelogCommand extends Command
             ]
         );
         $t = new Timesheet(
-            $output,
+            $logger,
             $replicon_config['username'],
             $replicon_config['password'],
             [
