@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "45ddfde2a29c23d5470ab3f3508c4d94",
-    "content-hash": "68ec3fdd8c308288674e342316b4b458",
+    "hash": "6cba921af1d64accb0e0df784e9490ff",
+    "content-hash": "222d1f19d8f4c30357f2e5a196bcf4ec",
     "packages": [
         {
             "name": "guzzlehttp/command",
@@ -393,17 +393,17 @@
             "time": "2015-10-31 02:15:02"
         },
         {
-            "name": "lazyguru/replicon-gen2",
-            "version": "0.0.2",
+            "name": "lazyguru/replicon",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/lazyguru/replicon-gen2.git",
-                "reference": "2cf32dab21687c6058f8a86e631f5b6b686248cd"
+                "url": "https://github.com/lazyguru/replicon.git",
+                "reference": "98db6c3cecfbf900e6ed4e26e4862e0cdcad7619"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/replicon-gen2/zipball/2cf32dab21687c6058f8a86e631f5b6b686248cd",
-                "reference": "2cf32dab21687c6058f8a86e631f5b6b686248cd",
+                "url": "https://api.github.com/repos/lazyguru/replicon/zipball/98db6c3cecfbf900e6ed4e26e4862e0cdcad7619",
+                "reference": "98db6c3cecfbf900e6ed4e26e4862e0cdcad7619",
                 "shasum": ""
             },
             "require": {
@@ -430,8 +430,8 @@
                     "email": "joe@joeconstant.com"
                 }
             ],
-            "description": "Integrate with Replicon's Gen2 API",
-            "time": "2015-10-31 02:16:18"
+            "description": "Integrate with Replicon's Gen2 & Gen3 API",
+            "time": "2015-10-31 03:10:53"
         },
         {
             "name": "lazyguru/toggl",
