@@ -9,15 +9,12 @@
         }
     ],
     "require": {
-        "guzzlehttp/guzzle-services": "~0.2",
-        "monolog/monolog": "1.6.0",
-        "guzzlehttp/log-subscriber": "~1.0",
         "symfony/console": "~2.5",
         "symfony/debug": "~2.5",
         "symfony/config": "~2.5",
-        "lazyguru/replicon": "*",
-        "lazyguru/toggl": "*",
-        "lazyguru/jira": "*"
+        "lazyguru/replicon": "~0.1",
+        "lazyguru/toggl": "~0",
+        "lazyguru/jira": "~0"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"

@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "6cba921af1d64accb0e0df784e9490ff",
-    "content-hash": "222d1f19d8f4c30357f2e5a196bcf4ec",
+    "hash": "68eec8cbdfec57bf1b127e64db62d738",
+    "content-hash": "1a99ad9b8239987cc111e9713676b8e7",
     "packages": [
         {
             "name": "guzzlehttp/command",
@@ -313,16 +313,16 @@
         },
         {
             "name": "lazyguru/base-api",
-            "version": "0.0.3",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/base-api.git",
-                "reference": "e2cd07900eaecf74e61960d1b426136d976d5b46"
+                "reference": "7ca57d0c1e95e66f60cedd30cd7f07553714d9cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/base-api/zipball/e2cd07900eaecf74e61960d1b426136d976d5b46",
-                "reference": "e2cd07900eaecf74e61960d1b426136d976d5b46",
+                "url": "https://api.github.com/repos/lazyguru/base-api/zipball/7ca57d0c1e95e66f60cedd30cd7f07553714d9cc",
+                "reference": "7ca57d0c1e95e66f60cedd30cd7f07553714d9cc",
                 "shasum": ""
             },
             "require": {
@@ -349,7 +349,7 @@
                 }
             ],
             "description": "Base API class setup",
-            "time": "2015-10-31 02:45:07"
+            "time": "2015-11-02 02:48:29"
         },
         {
             "name": "lazyguru/jira",
@@ -394,22 +394,22 @@
         },
         {
             "name": "lazyguru/replicon",
-            "version": "0.0.3",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/replicon.git",
-                "reference": "98db6c3cecfbf900e6ed4e26e4862e0cdcad7619"
+                "reference": "c58c82c490df16d48626b33933f48a8a0d01d845"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/replicon/zipball/98db6c3cecfbf900e6ed4e26e4862e0cdcad7619",
-                "reference": "98db6c3cecfbf900e6ed4e26e4862e0cdcad7619",
+                "url": "https://api.github.com/repos/lazyguru/replicon/zipball/c58c82c490df16d48626b33933f48a8a0d01d845",
+                "reference": "c58c82c490df16d48626b33933f48a8a0d01d845",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle-services": "~0.2",
                 "guzzlehttp/log-subscriber": "~1.0",
-                "lazyguru/base-api": "*",
+                "lazyguru/base-api": "~0.1",
                 "monolog/monolog": "1.6.0",
                 "php": ">=5.4.0",
                 "psr/log": "^1.0"
@@ -417,7 +417,7 @@
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "Constant\\Replicon\\Gen2\\": "src"
+                    "Constant\\Replicon\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -431,7 +431,7 @@
                 }
             ],
             "description": "Integrate with Replicon's Gen2 & Gen3 API",
-            "time": "2015-10-31 03:10:53"
+            "time": "2015-11-03 18:25:18"
         },
         {
             "name": "lazyguru/toggl",

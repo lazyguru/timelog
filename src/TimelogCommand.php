@@ -1,8 +1,8 @@
 <?php namespace Constant\Timelog\Command;
 
 use Constant\Jira\JiraService;
-use Constant\Replicon\Gen2\RepliconService;
-use Constant\Replicon\Gen2\Timesheet;
+use Constant\Replicon\Gen3\RepliconService;
+use Constant\Replicon\Gen3\Timesheet;
 use Constant\Toggl\TimeEntry;
 use Constant\Toggl\TogglService;
 use Psr\Log\LoggerInterface;
@@ -237,9 +237,6 @@ class TimelogCommand extends Command
      */
     protected function processReplicon($rundate, $entries, OutputInterface $output, LoggerInterface $logger)
     {
-        // Temporary until Gen3 access is enabled.  Then will refactor code to support both Gen2 and Gen3
-        return $this->printReplicon($rundate, $entries, $output);
-
         $replicon_config = Yaml::parse('replicon.yaml');
         $r = new RepliconService(
             $logger,
@@ -305,7 +302,15 @@ class TimelogCommand extends Command
                 $cell = $t->createCell($date, $entry['time'], implode(',', $entry['ticket']));
                 $cells[] = $cell;
             }
-            $t->addTimeRow($cells);
+            if ($t->isGen2()) {
+                $t->addTimeRow($cells);
+            }
+            if ($t->isGen3()) {
+                unset($cells[0]); // remove item at index 0
+                $cells = array_values($cells); // 'reindex' array
+                $project = $t->createProject($taskid);
+                $t->addTimeRow($cells, $project, $task);
+            }
             $this->advanceProgress();
         }
         $t->saveTimesheet();
