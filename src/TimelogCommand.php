@@ -285,6 +285,7 @@ class TimelogCommand extends Command
             $toBeLogged[$taskid][$entry->getEntryDate()]['ticket'][] = $ticket;
             $toBeLogged[$taskid][$entry->getEntryDate()]['tags'][] = $entry->getTags();
             $toBeLogged[$taskid][$entry->getEntryDate()]['timeoff'] = $timeoff;
+            $toBeLogged[$taskid][$entry->getEntryDate()]['billable'] = $entry->isBillable();
 
             $loggedTimes[] = [
                 'Client' => $entry->getClient(),
@@ -298,9 +299,11 @@ class TimelogCommand extends Command
             $task = $this->_getTask($t, $taskid, $entries);
             $cells = [];
             $cells[] = $task;
+            $billable = false;
             foreach ($entries as $date => $entry) {
                 $cell = $t->createCell($date, $entry['time'], implode(',', $entry['ticket']));
                 $cells[] = $cell;
+                if ($entry['billable']) $billable = true;
             }
             if ($t->isGen2()) {
                 $t->addTimeRow($cells);
@@ -309,7 +312,7 @@ class TimelogCommand extends Command
                 unset($cells[0]); // remove item at index 0
                 $cells = array_values($cells); // 'reindex' array
                 $project = $t->createProject($taskid);
-                $t->addTimeRow($cells, $project, $task);
+                $t->addTimeRow($cells, $project, $task, $billable);
             }
             $this->advanceProgress();
         }

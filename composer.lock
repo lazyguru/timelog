@@ -353,23 +353,20 @@
         },
         {
             "name": "lazyguru/jira",
-            "version": "0.0.3",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/jira.git",
-                "reference": "e27a2e9676c70b840a0db0c9a2bea10ed80de0c2"
+                "reference": "79e5e1f2b2c65b45faae5f8fe0f045e3eaba048b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/jira/zipball/e27a2e9676c70b840a0db0c9a2bea10ed80de0c2",
-                "reference": "e27a2e9676c70b840a0db0c9a2bea10ed80de0c2",
+                "url": "https://api.github.com/repos/lazyguru/jira/zipball/79e5e1f2b2c65b45faae5f8fe0f045e3eaba048b",
+                "reference": "79e5e1f2b2c65b45faae5f8fe0f045e3eaba048b",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle-services": "~0.2",
-                "guzzlehttp/log-subscriber": "~1.0",
-                "lazyguru/base-api": "*",
-                "monolog/monolog": "1.6.0",
+                "lazyguru/base-api": "~0.1",
                 "php": ">=5.4.0",
                 "psr/log": "^1.0"
             },
@@ -390,27 +387,24 @@
                 }
             ],
             "description": "Integrate with Jira REST API",
-            "time": "2015-10-31 02:15:02"
+            "time": "2015-11-03 18:41:26"
         },
         {
             "name": "lazyguru/replicon",
-            "version": "0.1.0",
+            "version": "0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/replicon.git",
-                "reference": "c58c82c490df16d48626b33933f48a8a0d01d845"
+                "reference": "a5686b952de7224309a69ef5c8c99425736b806d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/replicon/zipball/c58c82c490df16d48626b33933f48a8a0d01d845",
-                "reference": "c58c82c490df16d48626b33933f48a8a0d01d845",
+                "url": "https://api.github.com/repos/lazyguru/replicon/zipball/a5686b952de7224309a69ef5c8c99425736b806d",
+                "reference": "a5686b952de7224309a69ef5c8c99425736b806d",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle-services": "~0.2",
-                "guzzlehttp/log-subscriber": "~1.0",
                 "lazyguru/base-api": "~0.1",
-                "monolog/monolog": "1.6.0",
                 "php": ">=5.4.0",
                 "psr/log": "^1.0"
             },
@@ -431,27 +425,24 @@
                 }
             ],
             "description": "Integrate with Replicon's Gen2 & Gen3 API",
-            "time": "2015-11-03 18:25:18"
+            "time": "2015-11-06 16:16:10"
         },
         {
             "name": "lazyguru/toggl",
-            "version": "0.0.3",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/toggl.git",
-                "reference": "50d49f732935513bb5d8f307a1c77b52b15c91a3"
+                "reference": "8633569a9eb2f5009880c06bdbd7de6e72a7aba8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/toggl/zipball/50d49f732935513bb5d8f307a1c77b52b15c91a3",
-                "reference": "50d49f732935513bb5d8f307a1c77b52b15c91a3",
+                "url": "https://api.github.com/repos/lazyguru/toggl/zipball/8633569a9eb2f5009880c06bdbd7de6e72a7aba8",
+                "reference": "8633569a9eb2f5009880c06bdbd7de6e72a7aba8",
                 "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle-services": "~0.2",
-                "guzzlehttp/log-subscriber": "~1.0",
-                "lazyguru/base-api": "*",
-                "monolog/monolog": "1.6.0",
+                "lazyguru/base-api": "~0.1",
                 "php": ">=5.4.0",
                 "psr/log": "^1.0"
             },
@@ -472,7 +463,7 @@
                 }
             ],
             "description": "Integrate with Toggl's API",
-            "time": "2015-10-31 02:12:20"
+            "time": "2015-11-03 18:40:31"
         },
         {
             "name": "monolog/monolog",
