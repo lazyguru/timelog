@@ -391,16 +391,16 @@
         },
         {
             "name": "lazyguru/replicon",
-            "version": "0.1.9",
+            "version": "0.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lazyguru/replicon.git",
-                "reference": "aaf7d1622edc35597f25c2fd51182b8f3198c7c0"
+                "reference": "192b1c4b640e8cd17215e7bff20cc865dd7e5a8c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lazyguru/replicon/zipball/aaf7d1622edc35597f25c2fd51182b8f3198c7c0",
-                "reference": "aaf7d1622edc35597f25c2fd51182b8f3198c7c0",
+                "url": "https://api.github.com/repos/lazyguru/replicon/zipball/192b1c4b640e8cd17215e7bff20cc865dd7e5a8c",
+                "reference": "192b1c4b640e8cd17215e7bff20cc865dd7e5a8c",
                 "shasum": ""
             },
             "require": {
@@ -425,7 +425,7 @@
                 }
             ],
             "description": "Integrate with Replicon's Gen2 & Gen3 API",
-            "time": "2016-04-11 02:30:51"
+            "time": "2016-04-11 05:17:46"
         },
         {
             "name": "lazyguru/toggl",
