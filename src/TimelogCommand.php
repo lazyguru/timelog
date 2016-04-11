@@ -243,7 +243,8 @@ class TimelogCommand extends Command
             $replicon_config['username'],
             $replicon_config['password'],
             [
-                'companyKey' => $replicon_config['company']
+                'companyKey' => $replicon_config['company'],
+                'hostname' => $replicon_config['hostname']
             ]
         );
         $t = new Timesheet(
